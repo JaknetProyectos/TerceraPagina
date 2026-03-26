@@ -1,0 +1,95 @@
+version: "3.9"
+
+name: ${PROJECT_NAME}
+
+services:
+  db:
+    image: supabase/postgres:17.6.0.055-orioledb
+    container_name: ${PROJECT_NAME}_db
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  kong:
+    image: kong:2.8
+    container_name: ${PROJECT_NAME}_kong
+    restart: unless-stopped
+    ports:
+      - "${KONG_HTTP_PORT}:8000"
+      - "${KONG_HTTPS_PORT}:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong.yml
+    volumes:
+      - ./kong.yml:/kong.yml:ro
+    depends_on:
+      - db
+
+  auth:
+    image: supabase/gotrue:v2.188.1
+    container_name: ${PROJECT_NAME}_auth
+    restart: unless-stopped
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: http://localhost:${STUDIO_PORT}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - db
+
+  rest:
+    image: postgrest/postgrest:v11.2.0
+    container_name: ${PROJECT_NAME}_rest
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: anon
+    depends_on:
+      - db
+
+  realtime:
+    image: supabase/realtime:v2.25.0
+    container_name: ${PROJECT_NAME}_realtime
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - db
+
+  storage:
+    image: supabase/storage-api:v0.40.4
+    container_name: ${PROJECT_NAME}_storage
+    restart: unless-stopped
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_KEY}
+      POSTGREST_URL: http://rest:3000
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+    depends_on:
+      - db
+
+  studio:
+    image: supabase/studio
+    container_name: ${PROJECT_NAME}_studio
+    restart: unless-stopped
+    ports:
+      - "${STUDIO_PORT}:3000"
+    environment:
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_KEY}
+    depends_on:
+      - kong
+
+volumes:
+  db_data:
+    name: ${PROJECT_NAME}_db_data

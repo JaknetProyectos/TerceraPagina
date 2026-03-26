@@ -1,0 +1,3 @@
+- Clonar toda la información
+- Clonar el layout
+- no hace falta un admin page wtf
