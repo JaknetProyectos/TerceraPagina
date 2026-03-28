@@ -1,5 +1,6 @@
 import { CartItem } from "@/interfaces/CartItem";
 import { saveReservation } from "./reservations";
+import { sendConfirmationEmail } from "./email";
 
 export function getCart(): CartItem[] {
     if (typeof window === "undefined") return [];
@@ -49,6 +50,8 @@ export async function confirmCart(userData: any) {
             comentarios: userData.comentarios,
         });
 
+        await sendConfirmationEmail(reservation)
+
         results.push(reservation);
     }
 
@@ -90,6 +93,8 @@ export async function checkout(cart: CartItem[], userData: any) {
             telefono: userData.telefono,
             price: item.price,
         });
+
+        await sendConfirmationEmail(reservation)
 
         results.push(reservation);
     }
