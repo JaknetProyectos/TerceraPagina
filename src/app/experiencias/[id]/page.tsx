@@ -57,7 +57,7 @@ export default function ExperienceDetailPage() {
     data.accesibilidad = data.accesibilidad ?? [];
 
 
-    const priceNumber = Number(data.priceFormatted.replace(/[^0-9]/g, ""));
+    const priceNumber = Number(data.price);
     const total = priceNumber * Number(form.personas || 1);
 
 
