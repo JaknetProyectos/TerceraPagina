@@ -4,20 +4,20 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
-    try {
-        const data = await req.json();
-        const { nombre, email, telefono, personas, experiencia_title, detalles, id } = data;
+  try {
+    const data = await req.json();
+    const { nombre, email, telefono, personas, experiencia_title, detalles, id } = data;
 
-        const shortId = id ? id.substring(0, 8).toUpperCase() : "WNDR";
-        const statusLink = `https://wondermx.com/pagarcotizacion?quoteId=${id}`;
-        const adminEditLink = `https://wondermx.com/admin/cotizaciones/${id}`;
+    const shortId = id ? id.substring(0, 8).toUpperCase() : "WNDR";
+    const statusLink = `https://wondermx.com/pagarcotizacion?quoteId=${id}`;
+    const adminEditLink = `https://wondermx.com/admin/cotizaciones/${id}`;
 
-        // 1. EMAIL PARA EL CLIENTE (Diseño Minimalista Negro/Blanco)
-        await resend.emails.send({
-            from: "Wonder MX <contacto@wondermx.com>",
-            to: email,
-            subject: `Confirmación de Solicitud: (#${shortId})`,
-            html: `
+    // 1. EMAIL PARA EL CLIENTE (Diseño Minimalista Negro/Blanco)
+    await resend.emails.send({
+      from: "Wonder MX <contacto@wondermx.com>",
+      to: email,
+      subject: `Confirmación de Solicitud: (#${shortId})`,
+      html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         
         <div class="details-grid">
           <div class="detail-row">
-            <span class="label">Folio de seguimiento</span>
+            <span class="label">No. de cotización</span>
             <span class="value">#${shortId}</span>
           </div>
           <div class="detail-row">
@@ -68,8 +68,7 @@ export async function POST(req: Request) {
         </div>
 
         <div class="cta-container">
-          <a href="${statusLink}" class="btn-black">Consultar mi solicitud</a>
-          <p style="font-size: 12px; color: #999; margin-top: 20px;">Recibirás una respuesta en menos de 24 horas.</p>
+          <p style="font-size: 12px; color: #999; margin-top: 20px;">Pronto recibirás una respuesta de nuestros asesores.</p>
         </div>
 
         <div class="footer">
@@ -80,14 +79,14 @@ export async function POST(req: Request) {
     </body>
     </html>
   `,
-        });
+    });
 
-        // 2. EMAIL PARA EL ADMINISTRADOR (Notificación Crítica)
-        await resend.emails.send({
-            from: "Wonder MX System <sistema@wondermx.com>",
-            to: "contacto@wondermx.com",
-            subject: `🚨 NUEVA COTIZACIÓN: ${nombre} (#${shortId})`,
-            html: `
+    // 2. EMAIL PARA EL ADMINISTRADOR (Notificación Crítica)
+    await resend.emails.send({
+      from: "Wonder MX System <contacto@wondermx.com>",
+      to: "contacto@wondermx.com",
+      subject: `🚨 NUEVA COTIZACIÓN: ${nombre}`,
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px; border: 2px solid #000; border-radius: 24px;">
           <h2 style="font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px;">Nueva Solicitud Pendiente</h2>
           
@@ -100,16 +99,24 @@ export async function POST(req: Request) {
             "${detalles || "Sin detalles"}"
           </div>
 
-          <a href="${adminEditLink}" style="display: block; background: #000; color: #fff; text-align: center; padding: 18px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
-            Definir Precio y Enviar
-          </a>
+          <p style="display: block; background: #000; color: #fff; text-align: center; padding: 18px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
+            Favor de enviar el no. de cotización al cliente para darle seguimiento.
+          </p>
         </div>
       `,
-        });
+    });
 
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error("Error en API Cotización:", error);
-        return NextResponse.json({ error: "Error al procesar la cotización" }, { status: 500 });
-    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error en API Cotización:", error);
+    return NextResponse.json({ error: "Error al procesar la cotización" }, { status: 500 });
+  }
 }
+
+/**
+ * <a href="${adminEditLink}" style="display: block; background: #000; color: #fff; text-align: center; padding: 18px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
+            Definir Precio y Enviar
+          </a>
+
+
+ */

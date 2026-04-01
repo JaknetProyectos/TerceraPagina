@@ -9,6 +9,7 @@ export interface CartItem {
   price: number;
   fecha?: string;
   personas?: number;
+  description?: string;
 }
 
 interface CartContextType {

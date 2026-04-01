@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Check, Loader2, Calendar, Users, MessageSquare } from "lucide-react";
+import { Send, Check, Loader2 } from "lucide-react";
 import { useQuotes } from "@/hooks/useQuote";
 
 export default function ContactAventura() {
@@ -18,25 +18,49 @@ export default function ContactAventura() {
     mensaje: "",
   });
 
-  const { createQuote } = useQuotes()
+  const { createQuote } = useQuotes();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // 1. Guardamos en Supabase y recibimos el objeto creado (con su ID)
-      const newQuote = await createQuote(formData);
+      // --- MAPEO DE DATOS PARA SUPABASE ---
+      // Convertimos los campos del formulario a lo que espera la DB
+      const supabaseData = {
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono,
+        personas: formData.personas,
+        // El motivo lo guardamos como el slug de la experiencia
+        experiencia_slug: formData.motivo.toLowerCase().replace(/\s+/g, '-'),
+        // El título descriptivo
+        experiencia_title: formData.motivo,
+        // Concatenamos fechas y mensaje en el campo 'detalles'
+        detalles: `
+          Fechas: ${formData.fechaSalida} al ${formData.fechaRegreso}
+          Mensaje: ${formData.mensaje}
+        `.trim(),
+      };
+
+      // 1. Guardamos en Supabase (Usamos 'as any' para evitar conflictos de tipos estrictos)
+      const newQuote = await createQuote(supabaseData as any);
 
       if (!newQuote?.id) throw new Error("No se generó el ID de cotización");
 
-      // 2. Enviamos al API de correo incluyendo el ID de la base de datos
+      // 2. Enviamos al API de correo (Aquí puedes mandar el formData original o el mapeado)
       const response = await fetch("/api/cotizacion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          id: newQuote.id // <--- IMPORTANTE: Pasamos el ID real
+          id: newQuote.id,
+          detalles: `
+          Fechas: ${formData.fechaSalida} al ${formData.fechaRegreso}
+          Mensaje: ${formData.mensaje}
+        `.trim(),
+          // Añadimos estos para que el correo tenga contexto si los necesita
+          experiencia_title: supabaseData.experiencia_title
         }),
       });
 
@@ -58,9 +82,8 @@ export default function ContactAventura() {
     <section className="bg-white py-20 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
-
           {/* COLUMNA IZQUIERDA: TEXTO */}
-          <div className="space-y-8 top-24">
+          <div className="space-y-8 lg:top-24">
             <div className="space-y-4">
               <h2 className="text-5xl md:text-6xl font-bold text-black tracking-tighter leading-tight">
                 ¿Cómo podemos <br /> ayudarte hoy?
@@ -71,7 +94,7 @@ export default function ContactAventura() {
             </div>
           </div>
 
-          {/* COLUMNA DERECHA: FORMULARIO ESTILO MODERNO */}
+          {/* COLUMNA DERECHA: FORMULARIO */}
           <div className="bg-white border border-gray-100 shadow-lg rounded-xl p-8 md:p-12">
             {submitted ? (
               <div className="py-20 text-center space-y-6">
@@ -91,7 +114,6 @@ export default function ContactAventura() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-
                 {/* DATOS PERSONALES */}
                 <div className="space-y-4">
                   <input
@@ -130,13 +152,13 @@ export default function ContactAventura() {
                     value={formData.motivo}
                     onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
                   >
-                    <option value="viaje a medida servicio concierge">Viaje a medida (Servicio Concierge)</option>
+                    <option value="Viaje a medida (Servicio Concierge)">Viaje a medida (Servicio Concierge)</option>
                     <option value="Duda sobre los tours">Duda sobre los tours</option>
                     <option value="Asistencia con reserva ya realizada">Asistencia con reserva ya realizada</option>
                   </select>
                 </div>
 
-                {/* DETALLES DEL VIAJE (Solo si es viaje a medida o duda tours) */}
+                {/* DETALLES DEL VIAJE */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">Salida</label>
@@ -163,7 +185,9 @@ export default function ContactAventura() {
                       value={formData.personas}
                       onChange={(e) => setFormData({ ...formData, personas: e.target.value })}
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>)}
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                        <option key={n} value={n.toString()}>{n} {n === 1 ? 'persona' : 'personas'}</option>
+                      ))}
                       <option value="9+">9+ personas</option>
                     </select>
                   </div>

@@ -6,66 +6,92 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { id, nombre, email, precio_final, experiencia_slug, personas } = data;
+    const { id, nombre, email, precio_final, experiencia_title, personas, folio } = data;
 
-    // Generamos el enlace directo con el query param
-    const paymentLink = `https://vivamytrip.com/pagatuaventura?quoteId=${id}`;
+    const displayFolio = folio || id.substring(0, 8).toUpperCase();
+    const paymentLink = `https://wondermx.com/pagatuaventura?folio=${displayFolio}`;
 
     await resend.emails.send({
-      from: "Viva Trip <contacto@vivamytrip.com>",
+      from: "WONDER MX <contacto@wondermx.com>",
       to: email,
-      subject: `✅ Propuesta Lista: ${experiencia_slug} - Folio ${id.substring(0, 8).toUpperCase()}`,
+      subject: `CONFIRMACIÓN: ${experiencia_title?.toUpperCase() || 'TU VIAJE'} - #${displayFolio}`,
       html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
       <style>
-        .main-container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden; }
-        .hero { background-color: #03A9F4; padding: 40px 20px; text-align: center; color: white; }
-        .hero h1 { margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
-        .content { padding: 40px; color: #444; }
-        .price-box { background-color: #f9f9f9; border: 2px dashed #03A9F4; padding: 30px; text-align: center; border-radius: 12px; margin: 25px 0; }
-        .price-label { font-size: 12px; text-transform: uppercase; color: #888; font-weight: bold; letter-spacing: 1px; }
-        .price-value { font-size: 38px; color: #212121; font-weight: 900; margin: 5px 0; }
-        .details-list { width: 100%; border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px; }
-        .detail-item { font-size: 13px; margin-bottom: 8px; color: #666; }
-        .btn-pay { display: block; background-color: #FF9800; color: #ffffff !important; text-decoration: none; padding: 18px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; margin-top: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .footer { background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 11px; color: #999; }
-        .folio { font-family: monospace; font-size: 12px; color: #03A9F4; background: #E3F2FD; padding: 4px 8px; border-radius: 4px; }
+        body { margin: 0; padding: 0; background-color: #ffffff; }
+        .wrapper { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #000000; }
+        .header { padding: 40px 20px; text-align: center; border-bottom: 1px solid #eeeeee; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: 5px; text-transform: uppercase; margin: 0; }
+        .nav-mimic { font-size: 10px; letter-spacing: 2px; color: #888; margin-top: 10px; text-transform: uppercase; }
+        
+        .hero-image { width: 100%; height: 200px; background-color: #f6f6f6; object-fit: cover; }
+        
+        .content { padding: 40px 30px; text-align: center; }
+        .greeting { font-size: 18px; font-weight: 300; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .status-badge { display: inline-block; background-color: #000; color: #fff; padding: 5px 15px; font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-bottom: 30px; }
+        
+        .summary-card { border: 1px solid #eeeeee; margin: 20px 0; padding: 30px; text-align: left; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .summary-label { color: #888; }
+        .summary-value { font-weight: bold; }
+        
+        .total-section { border-top: 1px solid #eeeeee; margin-top: 20px; padding-top: 20px; text-align: right; }
+        .total-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .total-price { font-size: 24px; font-weight: bold; margin-top: 5px; }
+        
+        .btn-checkout { display: block; background-color: #000000; color: #ffffff !important; text-decoration: none; padding: 20px; font-weight: bold; text-transform: uppercase; font-size: 13px; letter-spacing: 3px; margin-top: 40px; transition: opacity 0.3s; }
+        
+        .footer { padding: 50px 30px; background-color: #fafafa; text-align: center; font-size: 10px; color: #aaaaaa; line-height: 1.8; text-transform: uppercase; letter-spacing: 1px; }
+        .social-links { margin-bottom: 20px; font-weight: bold; color: #000; }
       </style>
     </head>
     <body>
-      <div class="main-container">
-        <div class="hero">
-          <h1>¡Tu aventura te espera!</h1>
+      <div class="wrapper">
+        <div class="header">
+          <h1 class="logo">WONDER<span>MX</span></h1>
+          <div class="nav-mimic">Novedades • Experiencias • Destinos</div>
         </div>
-        
+
         <div class="content">
-          <p>Hola <strong>${nombre}</strong>,</p>
-          <p>Nuestro equipo de expertos ha finalizado el diseño de tu itinerario personalizado. Estamos listos para hacer realidad tu viaje a <strong>${experiencia_slug}</strong>.</p>
+          <div class="status-badge">PRESUPUESTO LISTO</div>
+          <p class="greeting">HOLA, ${nombre.toUpperCase()}</p>
+          <p style="font-size: 14px; color: #666; font-weight: 300;">Hemos preparado los detalles de tu próxima aventura. Revisa tu selección y finaliza la reserva para asegurar tu lugar.</p>
           
-          <div class="price-box">
-            <span class="price-label">Inversión Total</span>
-            <div class="price-value">$${Number(precio_final).toLocaleString()} MXN</div>
-            <span class="folio">FOLIO: ${id.toUpperCase()}</span>
+          <div class="summary-card">
+            <div class="summary-row">
+              <span class="summary-label">Experiencia</span>
+              <span class="summary-value">${experiencia_title || 'Custom Travel'}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">No. de cotización</span>
+              <span class="summary-value">#${displayFolio}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Pasajeros</span>
+              <span class="summary-value">${personas}</span>
+            </div>
+            
+            <div class="total-section">
+              <div class="total-label">Total a pagar</div>
+              <div class="total-price">$${Number(precio_final).toLocaleString('es-MX')} MXN</div>
+            </div>
           </div>
 
-          <div class="details-list">
-            <div class="detail-item"><strong>Viajeros:</strong> ${personas}</div>
-            <div class="detail-item"><strong>Estatus:</strong> Precio Confirmado ✅</div>
-          </div>
-
-          <a href="${paymentLink}" class="btn-pay">Pagar y Confirmar Ahora</a>
-
-          <p style="text-align: center; font-size: 12px; color: #999; margin-top: 30px;">
-            Este enlace es único para tu sesión de pago seguro. <br>
+          <a href="${paymentLink}" class="btn-checkout">COMPRAR AHORA</a>
+          
+          <p style="margin-top: 30px; font-size: 11px; color: #999; letter-spacing: 1px;">
+            ¿TIENES DUDAS? RESPONDE A ESTE CORREO O CONTACTA A TU ASESOR.
           </p>
         </div>
 
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Viva Trip México | vivamytrip.com</p>
-          <p>Este es un correo automático, por favor no respondas directamente.</p>
+          <div class="social-links">INSTAGRAM • FACEBOOK • TIKTOK</div>
+          <p>ESTÁS RECIBIENDO ESTE CORREO PORQUE SOLICITASTE UNA COTIZACIÓN EN WONDERMX.COM</p>
+          <p>&copy; ${new Date().getFullYear()} WONDER MX MÉXICO. TODOS LOS DERECHOS RESERVADOS.</p>
+          <p style="margin-top: 20px; color: #ccc;">#WONDERMXMOMENTS</p>
         </div>
       </div>
     </body>
@@ -75,7 +101,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error enviando email:", error);
     return NextResponse.json({ error: "Email failed" }, { status: 500 });
   }
 }

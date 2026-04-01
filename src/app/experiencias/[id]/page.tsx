@@ -269,7 +269,7 @@ export default function ExperienceDetailPage() {
 
                                 {/* confianza */}
                                 <div className="mt-5 border-t pt-4 space-y-2 text-sm text-gray-500">
-                                    <p>✔ Confirmación inmediata</p>
+                                    <p>✔ Confirmación rápida</p>
                                     <p>✔ Pago online seguro</p>
                                 </div>
                             </div>
