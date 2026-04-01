@@ -38,7 +38,7 @@ export default function ConocenosSection() {
               Si ya cuentas con una cotización enviada por tu concierge, haz clic en el botón de abajo. Ingresa los detalles de tu presupuesto y procesa tu pago de manera rápida y segura.
             </p>
 
-            <Link href={"/experiencias"}>
+            <Link href={"/pagarcotizacion"}>
               <button className="mt-6 inline-flex border-white border-solid border-2 border-s-2 items-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:opacity-90 transition">
                 Añadir al carrito
               </button>

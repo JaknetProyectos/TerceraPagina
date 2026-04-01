@@ -10,6 +10,7 @@
     "format": "bunx biome format --write"
   },
   "dependencies": {
+    "@api/etomin": "file:.api/apis/etomin",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.2",

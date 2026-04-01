@@ -83,14 +83,6 @@ export default function ArmaAventuraSection() {
                     Gestionamos experiencias con acceso prioritario y opciones VIP.
                   </p>
                 </li>
-
-                <li className="flex gap-3">
-                  <span className=" mt-1">•</span>
-                  <p className="text-sm leading-relaxed">
-                    <span className="font-semibold ">Soporte en tiempo real:</span>
-                    Tendrás contacto directo con tu concierge durante todo el viaje.
-                  </p>
-                </li>
               </ul>
             </div>
 

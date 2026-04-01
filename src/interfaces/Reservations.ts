@@ -11,4 +11,5 @@ export interface Reservation {
   status: "pending" | "confirmed" | "cancelled" | "completed";
   createdAt: string;
   price: string;
+  activity_title?: string;
 }

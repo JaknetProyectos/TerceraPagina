@@ -77,7 +77,6 @@ export default function HeroSection() {
                 <Handshake className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <p className="font-medium">Soporte en tiempo real</p>
                 <p className="text-sm text-gray-600">
                   Tendrás contacto directo con tu concierge por chat o llamada para cambios, dudas o recomendaciones instantáneas.
                 </p>

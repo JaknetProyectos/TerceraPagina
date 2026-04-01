@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ShoppingBag, Settings, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingBag, Settings, ShoppingCart, ShoppingBagIcon } from "lucide-react";
 import { useCartCount } from "@/hooks/useCartCount";
 import { useCart } from "./CartContext";
 import Image from "next/image";
@@ -63,7 +63,7 @@ export default function Header() {
               href="/cart"
               className="relative p-2 rounded-full hover:bg-gray-100 transition"
             >
-              <ShoppingCart className="w-6 h-6" />
+              <ShoppingBagIcon className="w-6 h-6" />
 
               {cart.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">

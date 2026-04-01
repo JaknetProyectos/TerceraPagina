@@ -1,6 +1,8 @@
 import { CartItem } from "@/interfaces/CartItem";
 import { saveReservation } from "./reservations";
 import { sendConfirmationEmail } from "./email";
+import { processEtominPayment } from "./payment";
+import { Reservation } from "@/interfaces/Reservations";
 
 export function getCart(): CartItem[] {
     if (typeof window === "undefined") return [];
@@ -68,7 +70,7 @@ export async function fakePayment() {
     });
 }
 
-export async function checkout(cart: CartItem[], userData: any) {
+export async function checkout(cart: CartItem[], userData: any, cardData: any) {
     if (!cart.length) throw new Error("Carrito vacío");
 
     for (const item of cart) {
@@ -77,12 +79,20 @@ export async function checkout(cart: CartItem[], userData: any) {
         }
     }
 
-    // 💰 pago fake
-    await new Promise(res => setTimeout(res, 1500));
+    const totalAmount = cart.reduce((acc, item) => {
+        const price = item.price;
+        return acc + price;
+    }, 0);
 
-    const results = [];
+    const orderId = `VMT-${Date.now().toString().slice(-6)}`;
 
+
+
+    const results: Reservation[] = [];
+
+    // Guardamos todas en la DB primero
     for (const item of cart) {
+        console.log({ item })
         const reservation = await saveReservation({
             activityTitle: item.title,
             destinationName: item.destinationName,
@@ -93,11 +103,46 @@ export async function checkout(cart: CartItem[], userData: any) {
             telefono: userData.telefono,
             price: item.price,
         });
-
-        await sendConfirmationEmail(reservation)
-
         results.push(reservation);
     }
+
+    // 🎫 Generamos la información del Ticket
+    const subtotal = results.reduce((acc, curr) => acc + Number(curr.price.replace(/[^0-9.-]+/g, "")), 0);
+
+    // 💰 Simulación de pago
+    const paymentResult = await processEtominPayment({
+        amount: subtotal,
+        cardData: cardData, // Viene del formulario de pago
+        customer: {
+            nombre: userData.nombre,
+            email: userData.email,
+            telefono: userData.telefono,
+            direccion: userData.direccion,
+            cp: userData.cp
+        },
+        orderId: orderId
+    });
+
+    const checkoutInfo = {
+        orderId: orderId,
+        orderDate: new Intl.DateTimeFormat('es-MX', { dateStyle: 'long' }).format(new Date()),
+        subtotal: subtotal.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+        metodoPago: "Tarjeta de crédito o débito",
+        billingAddress: {
+            nombre: userData.nombre,
+            calle: userData.direccion || "No especificada",
+            ciudad: userData.ciudad || "Ciudad de México",
+            codigoPostal: userData.cp || "00000",
+            telefono: userData.telefono,
+            email: userData.email
+        }
+    };
+
+    console.log({ checkoutInfo })
+    console.log({ results })
+
+    // 🔥 ENVIAR UN SOLO EMAIL CON TODO EL ARRAY
+    await sendConfirmationEmail(results, checkoutInfo);
 
     return results;
 }

@@ -99,11 +99,6 @@ export default function ExperiencesStore() {
                       <Clock className="w-4 h-4" />
                       <span>{exp.duration}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-amber-500">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="font-medium">{exp.rating}</span>
-                      <span className="text-[var(--md-on-surface-disabled)]">({exp.reviewCount})</span>
-                    </div>
                   </div>
 
                   <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">

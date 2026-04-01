@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import ExperiencesStore from "@/components/ExperiencesStore";
-import ContactSection from "@/components/ContactSection";
+import ContactAventura from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ArmaAventuraSection from "@/components/ArmaAventuraSection";
 import ConocenosSection from "@/components/ConocenosSection";
@@ -15,7 +15,7 @@ export default function Home() {
       <HeroSection />
       <ArmaAventuraSection />
       <ConocenosSection />
-      <ContactSection />
+      <ContactAventura />
       <Footer />
     </main>
   );
