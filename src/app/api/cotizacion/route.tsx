@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         await resend.emails.send({
             from: "Wonder MX <contacto@wondermx.com>",
             to: email,
-            subject: `Confirmación de Solicitud: ${experiencia_title} (#${shortId})`,
+            subject: `Confirmación de Solicitud: (#${shortId})`,
             html: `
     <!DOCTYPE html>
     <html>
