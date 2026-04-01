@@ -114,7 +114,7 @@ export default function ContactAventura() {
                     <input
                       required
                       type="tel"
-                      placeholder="Teléfono / WhatsApp"
+                      placeholder="Teléfono"
                       className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black transition-all"
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}

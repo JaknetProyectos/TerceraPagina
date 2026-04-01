@@ -60,7 +60,6 @@ export async function POST(req: Request) {
 
           <p style="text-align: center; font-size: 12px; color: #999; margin-top: 30px;">
             Este enlace es único para tu sesión de pago seguro. <br>
-            Si prefieres asistencia personal, <a href="https://wa.me/TUNUMERO" style="color: #03A9F4;">contáctanos por WhatsApp</a>.
           </p>
         </div>
 

@@ -204,7 +204,7 @@ export default function CartPage() {
 
                             {/* Teléfono y País */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="tel" placeholder="WhatsApp / Teléfono" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
+                                <input type="tel" placeholder="Teléfono" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
                                 <div className="relative">
                                     <select className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black appearance-none cursor-pointer" value={form.pais} onChange={e => setForm({ ...form, pais: e.target.value })}>
                                         <option value="México">México</option>
