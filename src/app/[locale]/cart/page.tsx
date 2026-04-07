@@ -11,13 +11,14 @@ import securePayment from "@/public/secure-payment.png"
 import Image from "next/image";
 import securePaymentLogo from "@/public/secure-payment.png"
 import { EmptyCart } from "@/components/EmptyCart";
+import { useTranslations } from "next-intl";
 
 export default function CartPage() {
+    const t = useTranslations("CartPage");
     const { cart, updateItem, removeItem, clearCart } = useCart();
     const [loading, setLoading] = useState(false);
     const [ticket, setTicket] = useState<any[] | null>(null);
-        const [paymentError, setPaymentError] = useState<string | null>(null); // Nuevo estado para errores
-
+    const [paymentError, setPaymentError] = useState<string | null>(null);
 
     // Datos de contacto y envío
     const [form, setForm] = useState({
@@ -32,7 +33,7 @@ export default function CartPage() {
         cp: "",
     });
 
-    // Datos de tarjeta (Nunca se guardan en DB, solo se pasan a Etomin)
+    // Datos de tarjeta
     const [card, setCard] = useState({
         number: "",
         name: "",
@@ -66,9 +67,8 @@ export default function CartPage() {
     const handleCheckout = async () => {
         try {
             setLoading(true);
-            if (!canCheckout) throw Error("Por favor completa todos los datos obligatorios.");
+            if (!canCheckout) throw Error(t("alerts.complete_fields"));
 
-            // CONCATENACIÓN ORDENADA: Aquí unimos todo en el campo 'direccion'
             const direccionCompleta = `
                 ${form.calle} 
                 ${form.apartamento ? `, Apt/Int: ${form.apartamento}` : ""} 
@@ -78,7 +78,7 @@ export default function CartPage() {
 
             const dataParaEnvio = {
                 ...form,
-                direccion: direccionCompleta // El backend recibirá la cadena ya formateada
+                direccion: direccionCompleta
             };
 
             const result = await checkout(cart, dataParaEnvio, card);
@@ -86,13 +86,13 @@ export default function CartPage() {
             clearCart();
             setTicket(result);
         } catch (err: any) {
-            setPaymentError(err.message || "Error al procesar el pago");
+            setPaymentError(err.message || t("alerts.process_error"));
         } finally {
             setLoading(false);
         }
     };
 
-       if (cart.length === 0 && !ticket && !paymentError) {
+    if (cart.length === 0 && !ticket && !paymentError) {
         return <EmptyCart />
     }
 
@@ -100,40 +100,41 @@ export default function CartPage() {
         <>
             <Header />
             
-            
-            {/* MODAL DE ERROR (BLUR + RED STYLE) */}
+            {/* MODAL DE ERROR */}
             {paymentError && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-in fade-in duration-300">
                     <div className="bg-white w-full max-w-md rounded-xl p-8 shadow-2xl text-center border-t-8 border-red-500 animate-in zoom-in duration-200">
                         <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="w-10 h-10 text-red-500" />
                         </div>
-                        <h2 className="text-2xl font-black uppercase  tracking-tighter text-gray-900 mb-2">Error en el pago</h2>
+                        <h2 className="text-2xl font-black uppercase tracking-tighter text-gray-900 mb-2">{t("modals.error_title")}</h2>
                         <p className="text-gray-500 text-sm mb-8 leading-relaxed font-medium">
                             {paymentError}
                         </p>
                         <button 
                             onClick={() => setPaymentError(null)} 
-                            className="w-full py-4 bg-red-500 text-white rounded-lg font-black  uppercase tracking-widest hover:bg-red-600 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-red-500 text-white rounded-lg font-black uppercase tracking-widest hover:bg-red-600 transition-all flex items-center justify-center gap-2"
                         >
-                            <X size={18} /> Intentar de nuevo
+                            <X size={18} /> {t("modals.try_again")}
                         </button>
                     </div>
                 </div>
             )}
             
-            {/* MODAL DE ÉXITO ESTILO "LUXURY RECEIPT" */}
+            {/* MODAL DE ÉXITO */}
             {ticket && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
                     <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl text-center animate-in zoom-in duration-300">
                         <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-6">
                             <CheckCircle className="w-10 h-10" />
                         </div>
-                        <h2 className="text-3xl font-bold tracking-tighter mb-2">¡Confirmado!</h2>
-                        <p className="text-gray-500 mb-8 font-light">Tu aventura en México comienza ahora. Hemos enviado los detalles a <span className="text-black font-medium">{form.email}</span></p>
+                        <h2 className="text-3xl font-bold tracking-tighter mb-2">{t("modals.success_title")}</h2>
+                        <p className="text-gray-500 mb-8 font-light">
+                            {t("modals.success_message")} <span className="text-black font-medium">{form.email}</span>
+                        </p>
 
                         <div className="text-left bg-gray-50 rounded-3xl p-6 mb-8 space-y-4 border border-gray-100">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-bottom pb-2 border-gray-200">Resumen de reserva</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-bottom pb-2 border-gray-200">{t("modals.summary")}</p>
                             {ticket.map((res, i) => (
                                 <div key={i} className="space-y-1">
                                     <p className="text-sm font-bold uppercase tracking-tight leading-none">{res.activity_title}</p>
@@ -148,7 +149,7 @@ export default function CartPage() {
                             onClick={() => window.location.href = "/"}
                             className="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase text-xs tracking-[0.2em] hover:bg-gray-900 transition active:scale-95"
                         >
-                            Finalizar
+                            {t("modals.finish")}
                         </button>
                     </div>
                 </div>
@@ -156,11 +157,11 @@ export default function CartPage() {
 
             <div className="max-w-7xl mt-24 mx-auto p-6 grid lg:grid-cols-12 gap-16">
 
-                {/* LADO IZQUIERDO: REVISIÓN DE SELECCIÓN (7 COLUMNAS) */}
+                {/* LADO IZQUIERDO: BOLSA */}
                 <div className="lg:col-span-7 space-y-8">
                     <div className="flex items-baseline justify-between border-b border-gray-100 pb-6">
-                        <h1 className="text-4xl font-bold tracking-tighter">Bolsa de Viaje</h1>
-                        <span className="text-sm text-gray-400 uppercase tracking-widest">{cart.length} Artículos</span>
+                        <h1 className="text-4xl font-bold tracking-tighter">{t("cart.title")}</h1>
+                        <span className="text-sm text-gray-400 uppercase tracking-widest">{cart.length} {t("cart.items")}</span>
                     </div>
 
                     <div className="space-y-6">
@@ -175,13 +176,13 @@ export default function CartPage() {
                                         onClick={() => removeItem(item.experienceId)}
                                         className="text-gray-300 hover:text-black transition-colors"
                                     >
-                                        <span className="text-[10px] font-bold uppercase tracking-widest">Quitar</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">{t("cart.remove")}</span>
                                     </button>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha seleccionada</label>
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t("cart.selected_date")}</label>
                                         <input
                                             type="date"
                                             value={item.fecha || ""}
@@ -190,7 +191,7 @@ export default function CartPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Número de viajeros</label>
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t("cart.travelers")}</label>
                                         <input
                                             type="number"
                                             min={1}
@@ -208,10 +209,9 @@ export default function CartPage() {
                         ))}
                     </div>
 
-                    {/* TOTAL BAR ESTILO ZARA */}
                     <div className="p-10 bg-black rounded-[2.5rem] flex justify-between items-center text-white shadow-2xl">
                         <div className="space-y-1">
-                            <span className="block text-[10px] font-bold opacity-60 uppercase tracking-[0.3em]">Total estimado</span>
+                            <span className="block text-[10px] font-bold opacity-60 uppercase tracking-[0.3em]">{t("cart.total_estimated")}</span>
                             <span className="text-4xl font-black tracking-tighter">${total.toLocaleString()} <small className="text-xs font-light">MXN</small></span>
                         </div>
                         <div className="hidden md:block">
@@ -220,26 +220,21 @@ export default function CartPage() {
                     </div>
                 </div>
 
-                {/* LADO DERECHO: CHECKOUT (5 COLUMNAS) */}
+                {/* LADO DERECHO: FORMULARIOS */}
                 <div className="lg:col-span-5 space-y-8">
-
-                    {/* DATOS DE ENVÍO/FACTURACIÓN (Mantiene el estilo previo) */}
-                    {/* 1. INFORMACIÓN DEL CLIENTE & FACTURACIÓN */}
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-gray-100 shadow-sm">
                         <h2 className="text-sm font-black uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
-                            <div className="w-2 h-2 bg-black rounded-full"></div> 1. Detalles de Facturación
+                            <div className="w-2 h-2 bg-black rounded-full"></div> 1. {t("form.billing_details")}
                         </h2>
 
                         <div className="space-y-4">
-                            {/* Nombre y Email */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" placeholder="Nombre completo" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
-                                <input type="email" placeholder="Email de contacto" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+                                <input type="text" placeholder={t("form.placeholders.name")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
+                                <input type="email" placeholder={t("form.placeholders.email")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
                             </div>
 
-                            {/* Teléfono y País */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="tel" placeholder="Teléfono" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
+                                <input type="tel" placeholder={t("form.placeholders.phone")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
                                 <div className="relative">
                                     <select className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black appearance-none cursor-pointer" value={form.pais} onChange={e => setForm({ ...form, pais: e.target.value })}>
                                         <option value="México">México</option>
@@ -252,91 +247,55 @@ export default function CartPage() {
                                 </div>
                             </div>
 
-                            {/* Dirección Principal (Calle y Número) */}
-                            <input
-                                type="text"
-                                placeholder="Dirección (Calle y número exterior/interior)"
-                                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black"
-                                value={form.calle}
-                                onChange={e => setForm({ ...form, calle: e.target.value })}
-                            />
+                            <input type="text" placeholder={t("form.placeholders.address")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.calle} onChange={e => setForm({ ...form, calle: e.target.value })} />
+                            <input type="text" placeholder={t("form.placeholders.apartment")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black italic" value={form.apartamento} onChange={e => setForm({ ...form, apartamento: e.target.value })} />
 
-                            {/* Información Adicional */}
-                            <input
-                                type="text"
-                                placeholder="Apartamento, suite, unidad, etc. (Opcional)"
-                                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black italic"
-                                value={form.apartamento}
-                                onChange={e => setForm({ ...form, apartamento: e.target.value })}
-                            />
-
-                            {/* Ciudad, Estado y CP */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <input type="text" placeholder="Ciudad" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.ciudad} onChange={e => setForm({ ...form, ciudad: e.target.value })} />
-                                <input type="text" placeholder="Estado" className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.estado} onChange={e => setForm({ ...form, estado: e.target.value })} />
-                                <input type="text" placeholder="C.P." className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.cp} onChange={e => setForm({ ...form, cp: e.target.value })} />
+                                <input type="text" placeholder={t("form.placeholders.city")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.ciudad} onChange={e => setForm({ ...form, ciudad: e.target.value })} />
+                                <input type="text" placeholder={t("form.placeholders.state")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.estado} onChange={e => setForm({ ...form, estado: e.target.value })} />
+                                <input type="text" placeholder={t("form.placeholders.zip")} className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-1 focus:ring-black" value={form.cp} onChange={e => setForm({ ...form, cp: e.target.value })} />
                             </div>
                         </div>
                     </div>
 
-                    {/* DATOS DE PAGO - AHORA CON LOGOS ESPECÍFICOS */}
                     <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm relative overflow-hidden">
-
-                        {/* Cabecera de Pago con Logo Etomin */}
                         <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-100">
                             <h2 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3">
-                                <div className="w-2 h-2 bg-black rounded-full"></div> 2. Método de Pago
+                                <div className="w-2 h-2 bg-black rounded-full"></div> 2. {t("payment.method")}
                             </h2>
-                            {/* Logo Oficial Etomin en B&N */}
-                            <Image
-                                src={etominLogo}
-                                alt="Etomin Payment Gateway"
-                                width={80}
-                                height={28}
-                                className="object-contain opacity-90"
-                            />
+                            <Image src={etominLogo} alt="Etomin" width={80} height={28} className="object-contain opacity-90" />
                         </div>
 
-                        {/* Inputs de Tarjeta */}
                         <div className="space-y-4 relative z-10">
-                            <input type="text" placeholder="Titular de la tarjeta" className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-sm outline-none focus:border-black transition-all" value={card.name} onChange={e => setCard({ ...card, name: e.target.value })} />
-                            <input type="text" placeholder="Número de tarjeta" maxLength={16} className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-sm outline-none focus:border-black transition-all" value={card.number} onChange={e => setCard({ ...card, number: e.target.value })} />
+                            <input type="text" placeholder={t("payment.placeholders.card_name")} className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-sm outline-none focus:border-black transition-all" value={card.name} onChange={e => setCard({ ...card, name: e.target.value })} />
+                            <input type="text" placeholder={t("payment.placeholders.card_number")} maxLength={16} className="w-full bg-white border border-gray-200 rounded-2xl p-4 text-sm outline-none focus:border-black transition-all" value={card.number} onChange={e => setCard({ ...card, number: e.target.value })} />
 
                             <div className="grid grid-cols-3 gap-3">
                                 <input type="text" placeholder="MM" maxLength={2} className="bg-white border border-gray-200 rounded-2xl p-4 text-sm text-center outline-none focus:border-black" value={card.month} onChange={e => setCard({ ...card, month: e.target.value })} />
-                                <input type="text" placeholder="AA" maxLength={2} className="bg-white border border-gray-200 rounded-2xl p-4 text-sm text-center outline-none focus:border-black" value={card.year} onChange={e => setCard({ ...card, year: e.target.value })} />
+                                <input type="text" placeholder="YY" maxLength={2} className="bg-white border border-gray-200 rounded-2xl p-4 text-sm text-center outline-none focus:border-black" value={card.year} onChange={e => setCard({ ...card, year: e.target.value })} />
                                 <input type="password" placeholder="CVV" maxLength={4} className="bg-white border border-gray-200 rounded-2xl p-4 text-sm text-center outline-none focus:border-black" value={card.cvv} onChange={e => setCard({ ...card, cvv: e.target.value })} />
                             </div>
                         </div>
 
-                        {/* Botón y Footer con Logo Secure Payment */}
                         <div className="mt-10 pt-10 border-t border-gray-50 text-center">
                             <button
                                 onClick={handleCheckout}
                                 disabled={loading || !canCheckout}
                                 className="w-full bg-black text-white py-6 rounded-2xl font-bold uppercase text-sm tracking-[0.3em] hover:bg-gray-800 transition-all transform active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 shadow-2xl shadow-gray-200"
                             >
-                                {loading ? "Procesando..." : `Confirmar Reserva`}
+                                {loading ? t("payment.processing") : t("payment.confirm_booking")}
                             </button>
 
-                            {/* Logo Oficial Secure Payment y Texto Legal */}
                             <div className="mt-8 flex flex-col items-center gap-4">
-                                <Image
-                                    src={securePaymentLogo}
-                                    alt="Secure Payment Certified"
-                                    width={140}
-                                    height={40}
-                                    className="object-contain opacity-70"
-                                />
+                                <Image src={securePaymentLogo} alt="Secure Payment" width={140} height={40} className="object-contain opacity-70" />
                                 <p className="text-[9px] text-gray-300 uppercase tracking-widest leading-relaxed max-w-[280px]">
-                                    Tus pagos se procesan de forma segura <br /> bajo estándares PCI-DSS de 256 bits.
+                                    {t("payment.security_notice")}
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <Footer />
         </>
     );

@@ -272,5 +272,50 @@
         "close": "Cerrar"
       }
     }
+  },
+  "CartPage": {
+    "cart": {
+      "title": "Bolsa de Viaje",
+      "items": "Artículos",
+      "remove": "Quitar",
+      "selected_date": "Fecha seleccionada",
+      "travelers": "Número de viajeros",
+      "total_estimated": "Total estimado"
+    },
+    "form": {
+      "billing_details": "Detalles de Facturación",
+      "placeholders": {
+        "name": "Nombre completo",
+        "email": "Email de contacto",
+        "phone": "Teléfono",
+        "address": "Dirección (Calle y número exterior/interior)",
+        "apartment": "Apartamento, suite, unidad, etc. (Opcional)",
+        "city": "Ciudad",
+        "state": "Estado",
+        "zip": "C.P."
+      }
+    },
+    "payment": {
+      "method": "Método de Pago",
+      "processing": "Procesando...",
+      "confirm_booking": "Confirmar Reserva",
+      "security_notice": "Tus pagos se procesan de forma segura bajo estándares PCI-DSS de 256 bits.",
+      "placeholders": {
+        "card_name": "Titular de la tarjeta",
+        "card_number": "Número de tarjeta"
+      }
+    },
+    "modals": {
+      "error_title": "Error en el pago",
+      "try_again": "Intentar de nuevo",
+      "success_title": "¡Confirmado!",
+      "success_message": "Tu aventura en México comienza ahora. Hemos enviado los detalles a",
+      "summary": "Resumen de reserva",
+      "finish": "Finalizar"
+    },
+    "alerts": {
+      "complete_fields": "Por favor completa todos los datos obligatorios.",
+      "process_error": "Error al procesar el pago"
+    }
   }
 }

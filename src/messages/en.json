@@ -272,5 +272,50 @@
         "close": "Close"
       }
     }
+  },
+  "CartPage": {
+    "cart": {
+      "title": "Travel Bag",
+      "items": "Items",
+      "remove": "Remove",
+      "selected_date": "Selected Date",
+      "travelers": "Number of Travelers",
+      "total_estimated": "Estimated Total"
+    },
+    "form": {
+      "billing_details": "Billing Details",
+      "placeholders": {
+        "name": "Full Name",
+        "email": "Contact Email",
+        "phone": "Phone Number",
+        "address": "Address (Street and house/apt number)",
+        "apartment": "Apartment, suite, unit, etc. (Optional)",
+        "city": "City",
+        "state": "State",
+        "zip": "Zip Code"
+      }
+    },
+    "payment": {
+      "method": "Payment Method",
+      "processing": "Processing...",
+      "confirm_booking": "Confirm Booking",
+      "security_notice": "Your payments are processed securely under 256-bit PCI-DSS standards.",
+      "placeholders": {
+        "card_name": "Cardholder Name",
+        "card_number": "Card Number"
+      }
+    },
+    "modals": {
+      "error_title": "Payment Error",
+      "try_again": "Try Again",
+      "success_title": "Confirmed!",
+      "success_message": "Your adventure in Mexico starts now. We've sent the details to",
+      "summary": "Booking Summary",
+      "finish": "Finish"
+    },
+    "alerts": {
+      "complete_fields": "Please complete all mandatory fields.",
+      "process_error": "Error processing payment"
+    }
   }
 }

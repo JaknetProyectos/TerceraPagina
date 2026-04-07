@@ -36,7 +36,7 @@ export function EmptyCart() {
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 pt-4">
                         <Link href="/experiencias"
                             className="w-full rounded-xl md:w-64 bg-[#212121] text-white py-5 px-8 text-lg font-bold hover:bg-[#333] transition-all duration-300 flex items-center justify-center gap-3 ">
-                            Explorar experiencias
+                            {t("explore_destinations")}
                             <ArrowRight size={14} strokeWidth={3} />
                         </Link>
                     </div>
