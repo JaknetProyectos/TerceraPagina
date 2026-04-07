@@ -353,5 +353,34 @@
         "thanks": "Thank you for choosing exclusivity"
       }
     }
+  },
+  "payQuote": {
+    "specialServices": "Special Services",
+    "personalizedExperience": "Personalized Experience",
+    "confirmationTitle": "Personalized Reservation Confirmation",
+    "description": "This section is exclusive to clients who already have an itinerary and budget sent by their concierge.",
+    "stepsTitle": "Steps to complete your payment:",
+    "step1": "1. Amount: Enter the total agreed amount in the price box (VAT included).",
+    "step2": "2. Reference: Enter your folio number or package name in the text field.",
+    "step3": "3. Security: Click “Add to Cart” to proceed to encrypted payment.",
+    "quoteButton": "Get a quote here",
+    "assistanceText": "If you have any questions about this tour or need assistance making your reservation, we will be happy to help.",
+    "checkoutTitle": "Personalized Checkout",
+    "checkoutSubtitle": "Enter the details of your agreed quote",
+    "labelFolio": "Quote No.",
+    "labelNombre": "Name",
+    "labelMonto": "Total agreed amount (MXN)",
+    "placeholderFolio": "WNDR-XXXXX",
+    "placeholderNombre": "Name",
+    "placeholderMonto": "0.00",
+    "statusFound": "FOLIO FOUND: DATA UPDATED",
+    "statusExternal": "EXTERNAL FOLIO: ENTER THE AGREED AMOUNT",
+    "holderLabel": "Reservation holder",
+    "addToCart": "Add to bag",
+    "confirmationDisclaimer": "By adding to the bag, you confirm that the folio and amount correspond to the quote sent by our Wonder MX team.",
+    "customOrder": "CUSTOM ORDER",
+    "externalFolio": "EXTERNAL FOLIO",
+    "client": "CLIENT",
+    "destination": "WONDER MX EXPERIENCE"
   }
 }

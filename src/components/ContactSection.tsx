@@ -76,7 +76,7 @@ export default function ContactAventura() {
   };
 
   return (
-    <section className="bg-white py-20 px-4">
+    <section id="contacto" className="bg-white py-20 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           

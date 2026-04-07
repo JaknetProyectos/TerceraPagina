@@ -8,13 +8,16 @@ import { Loader2, ShoppingCart, AlertCircle, Check, Info, Search } from "lucide-
 import { useRouter, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 function PayQuoteContent() {
+    const t = useTranslations("payQuote");
     const searchParams = useSearchParams();
     const queryFolio = searchParams.get('folio');
 
     const [folio, setFolio] = useState("");
     const [montoManual, setMontoManual] = useState<string>("");
+    const [nombre, setNombre] = useState<string>("");
     const [quoteData, setQuoteData] = useState<any>(null);
     const [searching, setSearching] = useState(false);
     const [infoMessage, setInfoMessage] = useState("");
@@ -32,17 +35,17 @@ function PayQuoteContent() {
             if (data) {
                 setQuoteData(data);
                 setMontoManual(data.price?.toString() || "");
-                setInfoMessage("FOLIO ENCONTRADO: DATOS ACTUALIZADOS");
+                setInfoMessage(t("statusFound"));
             } else {
                 setQuoteData(null);
-                setInfoMessage("FOLIO EXTERNO: INGRESE EL MONTO ACORDADO");
+                setInfoMessage(t("statusExternal"));
             }
         } catch (err) {
             console.error(err);
         } finally {
             setSearching(false);
         }
-    }, [getQuoteByFolio]);
+    }, [getQuoteByFolio, t]);
 
     useEffect(() => {
         if (queryFolio) {
@@ -55,15 +58,15 @@ function PayQuoteContent() {
     const handleAddToBag = () => {
         if (!folio || !montoManual) return;
 
-        // Si existe en DB usamos sus datos, si no, generamos uno genérico
         const itemToAdd = {
             experienceId: quoteData?.folio || folio.toUpperCase(),
-            title: quoteData?.experiencia_title || `ORDEN PERSONALIZADA: ${folio.toUpperCase()}`,
-            destinationName: "EXPERIENCIA WONDER MX",
+            title: quoteData?.experiencia_title || `${t("customOrder")}: ${folio.toUpperCase()}`,
+            destinationName: t("destination"),
             price: Number(montoManual),
+            nombre: nombre,
             personas: quoteData ? (parseInt(quoteData.personas) || 1) : 1,
             fecha: new Date().toISOString().split('T')[0],
-            description: quoteData ? `CLIENTE: ${quoteData.nombre}` : `FOLIO EXTERNO: ${folio.toUpperCase()}`
+            description: quoteData ? `${t("client")}: ${nombre}` : `${t("externalFolio")}: ${folio.toUpperCase()}`
         };
 
         addToCart(itemToAdd);
@@ -81,7 +84,6 @@ function PayQuoteContent() {
                         {/* IMAGE */}
                         <div className="relative">
                             <div className="rounded-3xl overflow-hidden border">
-
                                 <Image
                                     src={"https://53.fs1.hubspotusercontent-na1.net/hubfs/53/media/atencionclienteonline.jpeg"}
                                     alt="Experiencias"
@@ -96,39 +98,39 @@ function PayQuoteContent() {
                         {/* CONTENT */}
                         <div className="space-y-1">
                             <Link href={`/categoria/servicios-especiales`} className="text-xl text-gray-400 font-light">
-                                Servicios especiales
+                                {t("specialServices")}
                             </Link>
 
                             <h2 className="text-2xl font-semibold leading-tight">
-                                Experiencia Personalizada
+                                {t("personalizedExperience")}
                             </h2>
                             <br/>
                             <h2 className="text-3xl font-semibold leading-tight">
-                                Confirmación de Reserva Personalizada
+                                {t("confirmationTitle")}
                             </h2>
 
                             <p className="text-gray-600 text-lg leading-relaxed">
-                                Este apartado es exclusivo para clientes que ya cuentan con un itinerario y presupuesto enviado por su concierge.
+                                {t("description")}
                             </p>
 
                             <p className="text-gray-600 font-bold leading-relaxed">
-                                Pasos para realizar tu pago:
+                                {t("stepsTitle")}
                             </p>
 
                             <ol className="text-gray-600 font-light leading-relaxed">
-                                <li>1. Monto: Ingresa en el cuadro de precio la cantidad total acordada (IVA incluido).</li>
-                                <li>2. Referencia: Escribe tu número de folio o nombre del paquete en el campo de texto.</li>
-                                <li>3. Seguridad: Haz clic en “Añadir al carrito” para proceder al pago encriptado.</li>
+                                <li>{t("step1")}</li>
+                                <li>{t("step2")}</li>
+                                <li>{t("step3")}</li>
                             </ol>
 
                             <Link href={"/#contacto"}>
                                 <button className="mt-6 inline-flex border-white border-solid border-2 border-s-2 items-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:opacity-90 transition">
-                                    Cotiza aquí
+                                    {t("quoteButton")}
                                 </button>
                             </Link>
 
                             <p className="text-xs text-gray-600 font-light mt-3 py-2">
-                                Si tienes alguna pregunta sobre este tour o necesitas asistencia para hacer tu reserva, estaremos encantados de ayudarte.
+                                {t("assistanceText")}
                             </p>
                         </div>
 
@@ -140,8 +142,8 @@ function PayQuoteContent() {
 
                 {/* HEADER MINIMALISTA */}
                 <div className="border-b border-gray-100 p-8 text-center">
-                    <h1 className="text-2xl font-bold tracking-[0.3em] uppercase italic">Checkout Personalizado</h1>
-                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mt-2 uppercase font-medium">Ingresa los detalles de tu cotización acordada</p>
+                    <h1 className="text-2xl font-bold tracking-[0.3em] uppercase italic">{t("checkoutTitle")}</h1>
+                    <p className="text-[10px] text-gray-400 tracking-[0.2em] mt-2 uppercase font-medium">{t("checkoutSubtitle")}</p>
                 </div>
 
                 <div className="p-8 md:p-16 max-w-2xl mx-auto">
@@ -151,11 +153,11 @@ function PayQuoteContent() {
                         <div className="space-y-10">
                             {/* INPUT FOLIO */}
                             <div className="relative group">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">No. de cotización</label>
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t("labelFolio")}</label>
                                 <div className="flex items-center gap-4 border-b border-gray-200 focus-within:border-black transition-colors">
                                     <input
                                         type="text"
-                                        placeholder="WNDR-XXXXX"
+                                        placeholder={t("placeholderFolio")}
                                         value={folio}
                                         onChange={(e) => setFolio(e.target.value)}
                                         onBlur={() => autoSearch(folio)}
@@ -176,20 +178,34 @@ function PayQuoteContent() {
                             {/* DATOS DEL CLIENTE (Solo si existe en DB) */}
                             {quoteData && (
                                 <div className="p-6 bg-gray-50 border-l-2 border-black animate-in slide-in-from-left-2">
-                                    <p className="text-[9px] text-gray-400 uppercase font-bold mb-1">Titular de la reserva</p>
+                                    <p className="text-[9px] text-gray-400 uppercase font-bold mb-1">{t("holderLabel")}</p>
                                     <p className="text-lg font-bold uppercase italic tracking-tighter">{quoteData.nombre}</p>
                                     <p className="text-[10px] text-gray-500 mt-2 uppercase tracking-widest">{quoteData.experiencia_title}</p>
                                 </div>
                             )}
 
+                            {/* INPUT Nombre */}
+                            <div className="pt-4">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">{t("labelNombre")}</label>
+                                <div className="flex items-baseline gap-2 border-b border-gray-200 focus-within:border-black transition-colors">
+                                    <input
+                                        type="text"
+                                        placeholder={t("placeholderNombre")}
+                                        className="w-full py-4 text-5xl font-black tracking-tighter outline-none bg-transparent"
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
                             {/* INPUT MONTO (Siempre visible) */}
                             <div className="pt-4">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Monto total acordado (MXN)</label>
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">{t("labelMonto")}</label>
                                 <div className="flex items-baseline gap-2 border-b border-gray-200 focus-within:border-black transition-colors">
                                     <span className="text-2xl font-light text-gray-300">$</span>
                                     <input
                                         type="number"
-                                        placeholder="0.00"
+                                        placeholder={t("placeholderMonto")}
                                         className="w-full py-4 text-5xl font-black tracking-tighter outline-none bg-transparent"
                                         value={montoManual}
                                         onChange={(e) => setMontoManual(e.target.value)}
@@ -206,11 +222,11 @@ function PayQuoteContent() {
                                 disabled={!folio || !montoManual}
                                 className="w-full bg-black text-white py-6 font-bold uppercase text-xs tracking-[0.3em] hover:bg-zinc-800 transition-all flex items-center justify-center gap-3 disabled:bg-gray-100 disabled:text-gray-400"
                             >
-                                <ShoppingCart size={16} /> Añadir a la bolsa
+                                <ShoppingCart size={16} /> {t("addToCart")}
                             </button>
 
                             <p className="text-[9px] text-center text-gray-400 uppercase tracking-[0.2em] leading-relaxed">
-                                Al añadir a la bolsa confirmas que el folio y monto corresponden a la cotización enviada por nuestro equipo de Wonder MX.
+                                {t("confirmationDisclaimer")}
                             </p>
                         </div>
                     </div>
