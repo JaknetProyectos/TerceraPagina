@@ -6,7 +6,7 @@ import { Reservation } from "@/interfaces/Reservations";
 export async function sendConfirmationEmail(data: Reservation | Reservation[], checkoutInfo?: CheckoutInfo) {
   try {
     // Si es un array, usamos la ruta de checkout, si no, la de email individual
-    const endpoint = Array.isArray(data) ? "/api/checkout" : "/api/email";
+    const endpoint = "/api/checkout";
 
     const payload = Array.isArray(data)
       ? { reservations: data, checkoutInfo }

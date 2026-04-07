@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { Send, Check, Loader2 } from "lucide-react";
 import { useQuotes } from "@/hooks/useQuote";
+import { useTranslations } from "next-intl";
 
 export default function ContactAventura() {
+  const t = useTranslations("ContactAventura");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     telefono: "",
-    motivo: "viaje a medida servicio concierge",
+    motivo: "Viaje a medida (Servicio Concierge)",
     fechaSalida: "",
     fechaRegreso: "",
     personas: "1",
@@ -25,30 +28,23 @@ export default function ContactAventura() {
     setLoading(true);
 
     try {
-      // --- MAPEO DE DATOS PARA SUPABASE ---
-      // Convertimos los campos del formulario a lo que espera la DB
       const supabaseData = {
         nombre: formData.nombre,
         email: formData.email,
         telefono: formData.telefono,
         personas: formData.personas,
-        // El motivo lo guardamos como el slug de la experiencia
         experiencia_slug: formData.motivo.toLowerCase().replace(/\s+/g, '-'),
-        // El título descriptivo
         experiencia_title: formData.motivo,
-        // Concatenamos fechas y mensaje en el campo 'detalles'
         detalles: `
           Fechas: ${formData.fechaSalida} al ${formData.fechaRegreso}
           Mensaje: ${formData.mensaje}
         `.trim(),
       };
 
-      // 1. Guardamos en Supabase (Usamos 'as any' para evitar conflictos de tipos estrictos)
       const newQuote = await createQuote(supabaseData as any);
 
-      if (!newQuote?.id) throw new Error("No se generó el ID de cotización");
+      if (!newQuote?.id) throw new Error("No ID generated");
 
-      // 2. Enviamos al API de correo (Aquí puedes mandar el formData original o el mapeado)
       const response = await fetch("/api/cotizacion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,7 +55,6 @@ export default function ContactAventura() {
           Fechas: ${formData.fechaSalida} al ${formData.fechaRegreso}
           Mensaje: ${formData.mensaje}
         `.trim(),
-          // Añadimos estos para que el correo tenga contexto si los necesita
           experiencia_title: supabaseData.experiencia_title
         }),
       });
@@ -68,11 +63,11 @@ export default function ContactAventura() {
         setSubmitted(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        alert("Error al enviar el correo, pero tu solicitud fue guardada.");
+        alert(t("alerts.email_error"));
       }
     } catch (error) {
       console.error(error);
-      alert("Error de conexión.");
+      alert(t("alerts.connection_error"));
     } finally {
       setLoading(false);
     }
@@ -82,14 +77,14 @@ export default function ContactAventura() {
     <section className="bg-white py-20 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
+          
           {/* COLUMNA IZQUIERDA: TEXTO */}
           <div className="space-y-8 lg:top-24">
             <div className="space-y-4">
-              <h2 className="text-5xl md:text-6xl font-bold text-black tracking-tighter leading-tight">
-                ¿Cómo podemos <br /> ayudarte hoy?
-              </h2>
+              <h2 className="text-5xl md:text-6xl font-bold text-black tracking-tighter leading-tight" 
+                  dangerouslySetInnerHTML={{ __html: t.raw("title") }} />
               <p className="text-xl text-gray-500 font-light leading-relaxed max-w-md">
-                Ya sea que tengas una duda rápida o quieras que diseñemos tu próximo gran viaje, estamos aquí para hacer que tu visita a México sea inolvidable.
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -97,29 +92,28 @@ export default function ContactAventura() {
           {/* COLUMNA DERECHA: FORMULARIO */}
           <div className="bg-white border border-gray-100 shadow-lg rounded-xl p-8 md:p-12">
             {submitted ? (
-              <div className="py-20 text-center space-y-6">
+              <div className="py-20 text-center space-y-6 animate-in fade-in zoom-in duration-300">
                 <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center mx-auto">
                   <Check size={40} />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-3xl font-bold">¡Recibido!</h3>
-                  <p className="text-gray-500">Nuestro equipo se pondrá en contacto contigo en menos de 24 horas.</p>
+                  <h3 className="text-3xl font-bold">{t("success.title")}</h3>
+                  <p className="text-gray-500">{t("success.message")}</p>
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}
                   className="text-black font-bold underline underline-offset-4"
                 >
-                  Enviar otro mensaje
+                  {t("success.send_another")}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* DATOS PERSONALES */}
                 <div className="space-y-4">
                   <input
                     required
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder={t("form.placeholders.name")}
                     className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black transition-all"
                     value={formData.nombre}
                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
@@ -128,7 +122,7 @@ export default function ContactAventura() {
                     <input
                       required
                       type="email"
-                      placeholder="Correo electrónico"
+                      placeholder={t("form.placeholders.email")}
                       className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black transition-all"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -136,7 +130,7 @@ export default function ContactAventura() {
                     <input
                       required
                       type="tel"
-                      placeholder="Teléfono"
+                      placeholder={t("form.placeholders.phone")}
                       className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black transition-all"
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -144,24 +138,22 @@ export default function ContactAventura() {
                   </div>
                 </div>
 
-                {/* MOTIVO */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest ml-2 text-gray-400">Motivo de contacto</label>
+                  <label className="text-xs font-bold uppercase tracking-widest ml-2 text-gray-400">{t("form.labels.reason")}</label>
                   <select
                     className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black appearance-none"
                     value={formData.motivo}
                     onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
                   >
-                    <option value="Viaje a medida (Servicio Concierge)">Viaje a medida (Servicio Concierge)</option>
-                    <option value="Duda sobre los tours">Duda sobre los tours</option>
-                    <option value="Asistencia con reserva ya realizada">Asistencia con reserva ya realizada</option>
+                    <option value="Viaje a medida (Servicio Concierge)">{t("form.options.concierge")}</option>
+                    <option value="Duda sobre los tours">{t("form.options.tours_doubt")}</option>
+                    <option value="Asistencia con reserva ya realizada">{t("form.options.booking_help")}</option>
                   </select>
                 </div>
 
-                {/* DETALLES DEL VIAJE */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">Salida</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">{t("form.labels.departure")}</label>
                     <input
                       type="date"
                       className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black text-sm"
@@ -170,7 +162,7 @@ export default function ContactAventura() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">Regreso</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">{t("form.labels.return")}</label>
                     <input
                       type="date"
                       className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black text-sm"
@@ -179,23 +171,24 @@ export default function ContactAventura() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">Viajeros</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest ml-2 text-gray-400">{t("form.labels.travelers")}</label>
                     <select
                       className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black text-sm"
                       value={formData.personas}
                       onChange={(e) => setFormData({ ...formData, personas: e.target.value })}
                     >
                       {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
-                        <option key={n} value={n.toString()}>{n} {n === 1 ? 'persona' : 'personas'}</option>
+                        <option key={n} value={n.toString()}>
+                          {n} {n === 1 ? t("form.options.person") : t("form.options.people")}
+                        </option>
                       ))}
-                      <option value="9+">9+ personas</option>
+                      <option value="9+">9+ {t("form.options.people")}</option>
                     </select>
                   </div>
                 </div>
 
-                {/* MENSAJE */}
                 <textarea
-                  placeholder="Cuéntanos tus dudas o ideas..."
+                  placeholder={t("form.placeholders.message")}
                   rows={4}
                   className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-black resize-none"
                   value={formData.mensaje}
@@ -211,14 +204,14 @@ export default function ContactAventura() {
                     <Loader2 className="animate-spin" />
                   ) : (
                     <>
-                      <span>Enviar solicitud</span>
+                      <span>{t("form.submit")}</span>
                       <Send size={18} />
                     </>
                   )}
                 </button>
 
                 <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest">
-                  Al enviar aceptas nuestras políticas de privacidad y términos de servicio.
+                  {t("form.disclaimer")}
                 </p>
               </form>
             )}

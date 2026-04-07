@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ClientBody from "./ClientBody";
 import Script from "next/script";
-import { CartProvider } from "@/components/CartContext";
 
+// METADATA REAL DE VIVATRIP
 export const metadata: Metadata = {
-  title: "Wonder MX - Viaja en México",
-  description: "En Wonder MX creemos que viajar es mucho más que moverse de un lugar a otro: es vivir experiencias que despiertan los sentidos, conectan con la cultura y dejan recuerdos inolvidables.",
+  title: "Wonder MX - Vive México",
+  description: "En WonderMX creemos que viajar es mucho más que moverse de un lugar a otro: es vivir experiencias que despiertan los sentidos, conectan con la cultura y dejan recuerdos inolvidables.",
+  keywords: ["México", "Turismo", "Viajes", "Experiencias", "Fútbol"],
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="es">
+    // No definimos lang aquí porque lo hará el layout dinámico
+    <html suppressHydrationWarning>
       <head>
         <Script
           crossOrigin="anonymous"
@@ -26,11 +27,7 @@ export default function RootLayout({
           src="//unpkg.com/same-runtime/dist/index.global.js"
         />
       </head>
-      <CartProvider>
-        <body suppressHydrationWarning className="antialiased font-work-sans">
-          <ClientBody>{children}</ClientBody>
-        </body>
-      </CartProvider>
+      {children}
     </html>
   );
 }

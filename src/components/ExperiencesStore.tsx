@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Clock, Star, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 

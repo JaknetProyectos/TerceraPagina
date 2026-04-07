@@ -1,26 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useState } from "react";
-import { Menu, X, ShoppingBag, Settings, ShoppingCart, ShoppingBagIcon } from "lucide-react";
-import { useCartCount } from "@/hooks/useCartCount";
-import { useCart } from "./CartContext";
+import { Menu, X, ShoppingBagIcon } from "lucide-react";
+import { useCart } from "../context/CartContext";
 import Image from "next/image";
-
-
-const navItems = [
-  { href: "/#", label: "Inicio" },
-  { href: "/#asistencia", label: "Nuestra asistencia" },
-  { href: "/#eligenos", label: "¿Porqué elegirnos?" },
-  { href: "/#contacto", label: "Contacto" },
-  { href: "/experiencias", label: "Reservar ahora" },
-];
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
+  const t = useTranslations('Header');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCart();
 
-
+  // Definimos los items dentro para usar la función 't'
+  const navItems = [
+    { href: "/#", label: t('nav.home') },
+    { href: "/#asistencia", label: t('nav.assistance') },
+    { href: "/#eligenos", label: t('nav.why_us') },
+    { href: "/#contacto", label: t('nav.contact') },
+    { href: "/experiencias", label: t('nav.book_now') },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white elevation-2">
@@ -28,12 +27,9 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-
-          </Link>
-          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/wondermx.png"
-              alt="VivaTrip Logo"
+              alt="WonderMx Logo"
               width={50}
               height={50}
               priority

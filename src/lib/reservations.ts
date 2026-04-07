@@ -92,7 +92,7 @@ export async function saveReservation(reservation: any) {
 
 async function triggerEmailNotification(reservationData: any) {
   try {
-    await fetch(`/api/email`, {
+    await fetch(`/api/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(reservationData),
