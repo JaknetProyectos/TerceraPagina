@@ -11,7 +11,7 @@ import securePayment from "@/public/secure-payment.png"
 import Image from "next/image";
 import securePaymentLogo from "@/public/secure-payment.png"
 import { EmptyCart } from "@/components/EmptyCart";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function CartPage() {
     const t = useTranslations("CartPage");
@@ -19,6 +19,7 @@ export default function CartPage() {
     const [loading, setLoading] = useState(false);
     const [ticket, setTicket] = useState<any[] | null>(null);
     const [paymentError, setPaymentError] = useState<string | null>(null);
+    const locale = useLocale()
 
     // Datos de contacto y envío
     const [form, setForm] = useState({
@@ -81,7 +82,7 @@ export default function CartPage() {
                 direccion: direccionCompleta
             };
 
-            const result = await checkout(cart, dataParaEnvio, card);
+            const result = await checkout(cart, dataParaEnvio, card,locale);
 
             clearCart();
             setTicket(result);

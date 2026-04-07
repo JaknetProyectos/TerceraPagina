@@ -317,5 +317,41 @@
       "complete_fields": "Please complete all mandatory fields.",
       "process_error": "Error processing payment"
     }
+  },
+  "Emails": {
+    "Quote": {
+      "subject": "Inquiry Confirmation",
+      "title": "Request Received",
+      "greeting": "Hello {name}, we are designing a personalized proposal for <strong>{experience}</strong>. A concierge will contact you shortly.",
+      "disclaimer": "This is an automated receipt. No reply is necessary.",
+      "labels": {
+        "pax": "Pax",
+        "people": "People",
+        "period": "Period",
+        "to": "to",
+        "notes": "Travel notes"
+      }
+    },
+    "Checkout": {
+      "subject": "ORDER CONFIRMATION",
+      "confirmation_title": "Confirmation",
+      "order_label": "Order",
+      "table": {
+        "header_experience": "Experience / Detail",
+        "header_pax": "Pax",
+        "reservation_label": "Booking"
+      },
+      "summary": {
+        "total_paid": "Total Amount Paid",
+        "payment_method": "Payment Method"
+      },
+      "billing": {
+        "title": "Billing Info",
+        "phone": "Phone"
+      },
+      "footer": {
+        "thanks": "Thank you for choosing exclusivity"
+      }
+    }
   }
 }

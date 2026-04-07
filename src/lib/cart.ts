@@ -70,7 +70,7 @@ export async function fakePayment() {
     });
 }
 
-export async function checkout(cart: CartItem[], userData: any, cardData: any) {
+export async function checkout(cart: CartItem[], userData: any, cardData: any,locale: any) {
     if (!cart.length) throw new Error("Carrito vacío");
 
     for (const item of cart) {
@@ -142,7 +142,7 @@ export async function checkout(cart: CartItem[], userData: any, cardData: any) {
     console.log({ results })
 
     // 🔥 ENVIAR UN SOLO EMAIL CON TODO EL ARRAY
-    await sendConfirmationEmail(results, checkoutInfo);
+    await sendConfirmationEmail(results, checkoutInfo,locale);
 
     return results;
 }

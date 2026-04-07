@@ -317,5 +317,41 @@
       "complete_fields": "Por favor completa todos los datos obligatorios.",
       "process_error": "Error al procesar el pago"
     }
+  },
+  "Emails": {
+    "Quote": {
+      "subject": "Confirmación de Solicitud",
+      "title": "Solicitud Recibida",
+      "greeting": "Hola {name}, estamos diseñando una propuesta personalizada para <strong>{experience}</strong>. Un concierge se pondrá en contacto contigo en breve.",
+      "disclaimer": "Este es un acuse de recibo automático. No es necesario responder.",
+      "labels": {
+        "pax": "Pax",
+        "people": "Personas",
+        "period": "Periodo",
+        "to": "al",
+        "notes": "Notas de viaje"
+      }
+    },
+    "Checkout": {
+      "subject": "CONFIRMACIÓN DE PEDIDO",
+      "confirmation_title": "Confirmación",
+      "order_label": "Orden",
+      "table": {
+        "header_experience": "Experiencia / Detalle",
+        "header_pax": "Pax",
+        "reservation_label": "Reserva"
+      },
+      "summary": {
+        "total_paid": "Monto Total Pagado",
+        "payment_method": "Método de Pago"
+      },
+      "billing": {
+        "title": "Info de Facturación",
+        "phone": "Teléfono"
+      },
+      "footer": {
+        "thanks": "Gracias por elegir exclusividad"
+      }
+    }
   }
 }

@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { Send, Check, Loader2 } from "lucide-react";
 import { useQuotes } from "@/hooks/useQuote";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ContactAventura() {
   const t = useTranslations("ContactAventura");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const locale = useLocale()
   
   const [formData, setFormData] = useState({
     nombre: "",
@@ -55,7 +56,8 @@ export default function ContactAventura() {
           Fechas: ${formData.fechaSalida} al ${formData.fechaRegreso}
           Mensaje: ${formData.mensaje}
         `.trim(),
-          experiencia_title: supabaseData.experiencia_title
+          experiencia_title: supabaseData.experiencia_title,
+          locale
         }),
       });
 

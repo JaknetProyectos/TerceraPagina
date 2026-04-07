@@ -2,23 +2,27 @@ import { CheckoutInfo } from "@/interfaces/CheckoutInfo";
 import { Reservation } from "@/interfaces/Reservations";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getTranslations } from "next-intl/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
+    const body = await req.json();
     const {
       reservations,
-      checkoutInfo
-    }: { reservations: Reservation[], checkoutInfo: CheckoutInfo } = await req.json();
+      checkoutInfo,
+      locale = 'es'
+    }: { reservations: Reservation[], checkoutInfo: CheckoutInfo, locale?: string } = body;
 
+    const t = await getTranslations({ locale, namespace: "Emails.Checkout" });
     const customerEmail = checkoutInfo.billingAddress.email;
 
     await resend.emails.send({
       from: "Wonder MX <contacto@wondermx.com>",
       // Se envía al cliente y copia a la central para monitoreo
       to: [customerEmail, "contacto@wondermx.com"],
-      subject: `CONFIRMACION DE PEDIDO #${checkoutInfo.orderId}`,
+      subject: `${t('subject')} #${checkoutInfo.orderId}`,
       html: `
     <!DOCTYPE html>
     <html>
@@ -66,15 +70,15 @@ export async function POST(req: Request) {
         </div>
         
         <div class="order-meta">
-          <h2>Confirmación</h2>
-          <p>Orden #${checkoutInfo.orderId} / ${checkoutInfo.orderDate}</p>
+          <h2>${t('confirmation_title')}</h2>
+          <p>${t('order_label')} #${checkoutInfo.orderId} / ${checkoutInfo.orderDate}</p>
         </div>
 
         <table class="ticket-table">
           <thead>
             <tr>
-              <th>Experiencia / Detalle</th>
-              <th style="text-align: center;">Pax</th>
+              <th>${t('table.header_experience')}</th>
+              <th style="text-align: center;">${t('table.header_pax')}</th>
               <th style="text-align: right;">Total</th>
             </tr>
           </thead>
@@ -83,10 +87,10 @@ export async function POST(req: Request) {
               <tr>
                 <td>
                   <span class="item-title">${res.activityTitle ?? res?.activity_title}</span>
-                  <span class="item-subtitle">Reserva: ${res.fecha}</span>
+                  <span class="item-subtitle">${t('table.reservation_label')}: ${res.fecha}</span>
                 </td>
                 <td style="text-align: center; font-weight: 700;">${res.personas}</td>
-                <td class="price-col">$${Number(res.price).toLocaleString('es-MX')}</td>
+                <td class="price-col">$${Number(res.price).toLocaleString(locale === 'es' ? 'es-MX' : 'en-US')}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -95,11 +99,11 @@ export async function POST(req: Request) {
         <div class="summary-section">
           <table width="100%">
             <tr>
-              <td class="summary-label">Monto Total Pagado</td>
+              <td class="summary-label">${t('summary.total_paid')}</td>
               <td class="summary-value">${checkoutInfo.subtotal} MXN</td>
             </tr>
             <tr>
-              <td class="summary-label" style="padding-top: 15px;">Método de Pago</td>
+              <td class="summary-label" style="padding-top: 15px;">${t('summary.payment_method')}</td>
               <td style="text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding-top: 15px;">
                 ${checkoutInfo.metodoPago}
               </td>
@@ -109,19 +113,19 @@ export async function POST(req: Request) {
 
         <div class="billing-grid">
           <div class="billing-col">
-            <h3>Billing Info</h3>
+            <h3>${t('billing.title')}</h3>
             <div class="billing-details">
               <strong>${checkoutInfo.billingAddress.nombre}</strong><br>
               ${checkoutInfo.billingAddress.calle}<br>
               ${checkoutInfo.billingAddress.ciudad}, CP ${checkoutInfo.billingAddress.codigoPostal}<br>
-              Teléfono: ${checkoutInfo.billingAddress.telefono}<br>
+              ${t('billing.phone')}: ${checkoutInfo.billingAddress.telefono}<br>
               Email: ${checkoutInfo.billingAddress.email}
             </div>
           </div>
         </div>
 
         <div class="footer">
-          <p class="footer-text">Gracias por elegir exclusividad</p>
+          <p class="footer-text">${t('footer.thanks')}</p>
           <p class="brand-footer">WONDER MX</p>
           <p style="font-size: 8px; color: #eee; margin-top: 20px; letter-spacing: 1px;">MEXICO CITY | WORLDWIDE</p>
         </div>

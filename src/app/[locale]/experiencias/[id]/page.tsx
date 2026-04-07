@@ -14,7 +14,7 @@ import Loading from "@/components/Loading";
 import { Link } from "@/i18n/routing";
 import { checkout } from "@/lib/cart";
 import { formatPriceWithDecimals } from "@/lib/price";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ExperienceDetailPage() {
     const t = useTranslations("ExperienceDetailPage");
@@ -22,6 +22,7 @@ export default function ExperienceDetailPage() {
     const id = params.id as string;
     const { addToCart } = useCart();
     const { data, loading, error } = useExperience(id);
+    const locale = useLocale()
 
     const [selectedImage, setSelectedImage] = useState(0);
     const [galleryOpen, setGalleryOpen] = useState(false);
@@ -109,37 +110,6 @@ export default function ExperienceDetailPage() {
         // Feedback visual de éxito
         setAddedToCart(true);
         setTimeout(() => setAddedToCart(false), 3000);
-    };
-
-    // 👉 submit reserva
-    const handleBooking = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoadingCheckout(true);
-
-        try {
-            // Creamos un "item de carrito" temporal para la función checkout
-            const tempCartItem = [{
-                experienceId: data.id,
-                title: data.title,
-                destinationName: data.destinationName ?? "",
-                price: priceNumber,
-                personas: Number(form.personas),
-                fecha: form.fecha
-            }];
-
-            // Usamos la función checkout que ya tiene integrada la lógica de Etomin,
-            // Guardado en DB y Envío de Email de Ticket.
-            const results = await checkout(tempCartItem, form, card);
-
-            setReservationData(results);
-            setBookingOpen(false);
-            setSuccessOpen(true);
-        } catch (err: any) {
-            console.error("Error en reservación:", err);
-            alert(err.message || t("alerts.payment_error"));
-        } finally {
-            setLoadingCheckout(false);
-        }
     };
 
     return (

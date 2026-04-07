@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getTranslations } from "next-intl/server";
 
 const parseDetailedString = (input: string) => {
-  // Regex para buscar dos fechas (YYYY-MM-DD)
   const dateRegex = /(\d{4}-\d{2}-\d{2})/g;
-  // Regex para capturar lo que sigue después de "Mensaje:" o "Notas:"
   const messageRegex = /(?:Mensaje|Notas|Detalles):\s*(.*)/i;
 
   const dates = input.match(dateRegex);
@@ -13,7 +12,7 @@ const parseDetailedString = (input: string) => {
   return {
     initial_date: dates && dates[0] ? dates[0] : null,
     final_date: dates && dates[1] ? dates[1] : null,
-    message: messageMatch ? messageMatch[1].trim() : input // Si no hay etiqueta, devuelve el input original
+    message: messageMatch ? messageMatch[1].trim() : input 
   };
 };
 
@@ -22,17 +21,18 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { nombre, email, telefono, personas, experiencia_title, detalles, id } = data;
+    const { nombre, email, telefono, personas, experiencia_title, detalles, id, locale = 'es' } = data;
 
-    // Procesamos el string de detalles
+    // Obtener traducciones del servidor
+    const t = await getTranslations({ locale, namespace: "Emails.Quote" });
+
     const { initial_date, final_date, message } = parseDetailedString(detalles);
 
-    // 1. EMAIL PARA EL CLIENTE (Diseño Minimalista SHEIN/WonderMX)
-    // Se elimina el ID y status para el cliente.
+    // 1. EMAIL PARA EL CLIENTE
     await resend.emails.send({
       from: "Wonder MX <contacto@wondermx.com>",
       to: email,
-      subject: `Confirmación de Solicitud - ${experiencia_title}`,
+      subject: `${t('subject')} - ${experiencia_title}`,
       html: `
     <!DOCTYPE html>
     <html>
@@ -59,31 +59,31 @@ export async function POST(req: Request) {
           <p class="logo">WONDER MX</p>
         </div>
         
-        <h1 class="title">Solicitud Recibida</h1>
-        <p class="body-text">Hola ${nombre.split(' ')[0]}, estamos diseñando una propuesta personalizada para <strong>${experiencia_title}</strong>. Un concierge se pondrá en contacto contigo en breve.</p>
+        <h1 class="title">${t('title')}</h1>
+        <p class="body-text">${t('greeting', { name: nombre.split(' ')[0], experience: experiencia_title })}</p>
         
         <div class="details-grid">
           <div class="detail-row">
-            <span class="label">Pax</span>
-            <span class="value">${personas} Personas</span>
+            <span class="label">${t('labels.pax')}</span>
+            <span class="value">${personas} ${t('labels.people')}</span>
           </div>
           
           ${initial_date ? `
           <div class="detail-row">
-            <span class="label">Periodo</span>
-            <span class="value">${initial_date} al ${final_date}</span>
+            <span class="label">${t('labels.period')}</span>
+            <span class="value">${initial_date} ${t('labels.to')} ${final_date}</span>
           </div>
           ` : ''}
 
           <div class="detail-row">
-            <span class="label">Notas de viaje</span>
+            <span class="label">${t('labels.notes')}</span>
             <span class="value">${message}</span>
           </div>
         </div>
 
         <div class="footer">
           <p>WONDER MX | Luxury & Concierge Services</p>
-          <p style="margin-top: 15px; font-size: 8px;">Este es un acuse de recibo automático. No es necesario responder.</p>
+          <p style="margin-top: 15px; font-size: 8px;">${t('disclaimer')}</p>
         </div>
       </div>
     </body>
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
   `,
     });
 
-    // 2. EMAIL PARA EL ADMINISTRADOR (Notificación con ID y Status)
+    // 2. EMAIL PARA EL ADMINISTRADOR (Se queda en español ya que es gestión interna)
     await resend.emails.send({
       from: "Wonder MX System <contacto@wondermx.com>",
       to: "contacto@wondermx.com",
@@ -99,21 +99,19 @@ export async function POST(req: Request) {
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #eee;">
           <h2 style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px;">Gestión de Cotización</h2>
-          
           <div style="margin: 20px 0;">
             <p><strong>ID Interno:</strong> ${id}</p>
             <p><strong>Cliente:</strong> ${nombre}</p>
+            <p><strong>Idioma Cliente:</strong> ${locale.toUpperCase()}</p>
             <p><strong>Contacto:</strong> ${email} | ${telefono}</p>
             <p><strong>Experiencia:</strong> ${experiencia_title}</p>
             <p><strong>Pax:</strong> ${personas}</p>
           </div>
-
           <div style="background: #f9f9f9; padding: 20px; border-left: 3px solid #000; font-size: 13px;">
             <strong>Mensaje extraído:</strong><br/>
             ${message}
             ${initial_date ? `<br/><br/><strong>Fechas detectadas:</strong> ${initial_date} / ${final_date}` : ''}
           </div>
-
           <div style="margin-top: 30px;">
             <a href="https://wondermx.com/admin/cotizaciones/${id}" 
                style="background: #000; color: #fff; text-decoration: none; padding: 15px 25px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: inline-block;">
