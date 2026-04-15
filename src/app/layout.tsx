@@ -20,10 +20,6 @@ export default function RootLayout({
       <head>
         <Script
           crossOrigin="anonymous"
-          src="//unpkg.com/react-grab/dist/index.global.js"
-        />
-        <Script
-          crossOrigin="anonymous"
           src="//unpkg.com/same-runtime/dist/index.global.js"
         />
       </head>
