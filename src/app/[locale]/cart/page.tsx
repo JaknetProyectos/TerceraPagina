@@ -264,7 +264,7 @@ export default function CartPage() {
                             <h2 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3">
                                 <div className="w-2 h-2 bg-black rounded-full"></div> 2. {t("payment.method")}
                             </h2>
-                            <Image src={etominLogo} alt="Etomin" width={80} height={28} className="object-contain opacity-90" />
+                            <Image src={etominLogo} alt="Etomin" width={120} height={40} className="object-contain opacity-90" />
                         </div>
 
                         <div className="space-y-4 relative z-10">
