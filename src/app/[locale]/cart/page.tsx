@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import { checkout } from "@/lib/cart";
 import { useState } from "react";
 import { CreditCard, Lock, CheckCircle, MapPin, ShieldCheck, AlertTriangle, X } from "lucide-react";
-import etominLogo from "@/public/etomin.png"
+import octanoLogo from "@/public/octano.png"
 import securePayment from "@/public/secure-payment.png"
 import Image from "next/image";
 import securePaymentLogo from "@/public/secure-payment.png"
@@ -264,7 +264,7 @@ export default function CartPage() {
                             <h2 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3">
                                 <div className="w-2 h-2 bg-black rounded-full"></div> 2. {t("payment.method")}
                             </h2>
-                            <Image src={etominLogo} alt="Etomin" width={120} height={40} className="object-contain opacity-90" />
+                            <Image src={octanoLogo} alt="Etomin" width={120} height={40} className="object-contain opacity-90" />
                         </div>
 
                         <div className="space-y-4 relative z-10">
