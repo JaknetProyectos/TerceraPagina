@@ -1,17 +1,74 @@
 "use client";
 
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import React from 'react'
+import { useLocale } from "next-intl";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-export default function page() {
+function LegalEs() {
     return (
-        <>
-            <Header />
-            <main className='min-h-screen'>
+        <div className="legal-container">
+            <style dangerouslySetInnerHTML={{
+                __html: `
+        .legal-container {
+          color: #1a1a1a;
+          line-height: 1.6;
+          font-family: sans-serif;
+        }
+        .legal-container h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+        .legal-container h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; color: #3048ab; }
+        .legal-container h3 { font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; }
+        .legal-container p { margin-bottom: 1.2rem; text-align: justify; }
+        .legal-container ul { margin-bottom: 1.2rem; padding-left: 1.5rem; list-style-type: disc; }
+        .legal-container li { margin-bottom: 0.5rem; }
+        .legal-container section { margin-bottom: 3rem; }
+      `}} />
 
+            <section>
+                <h1 id="aviso-de-privacidad">Aviso de Privacidad</h1>
+                <p>El uso del sitio <strong>wondermx.com</strong>y el envío del formulario de contacto implican su consentimiento para el tratamiento de sus datos personales conforme a este aviso.<br /><strong>START WORKS MARKETING S.A. DE C.V., que opera bajo la marca </strong> <strong>Wonder Mx</strong> <strong>, </strong>es el responsable del tratamiento de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Nos dedicamos a diseñar y coordinar experiencias turísticas en México: itinerarios a medida, reservas en restaurantes y actividades, transporte, tours con acceso VIP y soporte en tiempo real durante su viaje. Puede contactarnos en <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a> o a través de ournexttrip.com.mx. Lo que sigue describe con precisión qué hacemos con la información que usted nos comparte, desde el momento en que la recibimos hasta el momento en que deja de estar con nosotros.<br /><strong>Su información llega a </strong> <strong>Wonder Mx</strong> <strong> únicamente cuando usted decide compartirla, </strong>y solo a través de dos vías. La primera es el formulario de contacto del sitio, donde puede indicarnos su nombre, correo electrónico, teléfono o WhatsApp, el motivo de su consulta, las fechas estimadas de su viaje, el número de personas y cualquier detalle adicional que considere relevante para diseñar su experiencia. La segunda es el proceso de pago, que opera a través de una pasarela encriptada; en ese proceso Wonder Mx no almacena ni tiene acceso a los datos completos de su tarjeta bancaria, ese manejo ocurre íntegramente dentro del entorno del procesador certificado. Wonder Mx no recaba datos sensibles en ningún punto del proceso de contacto ni de la prestación del servicio.<br />Wonder Mx implementa medidas de seguridad administrativas, técnicas y físicas para proteger sus datos personales contra daño, pérdida, alteración, destrucción o uso no autorizado. El acceso a la información está restringido al personal autorizado que la requiere para cumplir con las finalidades descritas en este aviso.<br /><strong>Cada dato que recibimos tiene un propósito concreto dentro de su viaje. </strong>Lo usamos para diseñar su itinerario según lo que nos describió, para gestionar las reservas con los proveedores que participan en su experiencia (restaurantes, operadores de tours, servicios de transporte, actividades), para mantener comunicación con usted durante el viaje a través de su concierge asignado, y para emitir los comprobantes fiscales que correspondan. No los usamos para enviarle publicidad de terceros ni los compartimos con empresas que no tengan un rol directo en la ejecución de su experiencia. Si en algún momento quisiéramos retomar contacto por una consulta anterior que no derivó en reserva, se lo haremos saber antes; basta con que nos indique que no lo hagamos para que dejemos de intentarlo.<br /><strong>Hay momentos en que su información llega a otras manos, siempre con un propósito operativo preciso. </strong>Los proveedores locales que Wonder Mx coordina en su nombre (restaurantes, guías, operadores) reciben únicamente lo mínimo necesario para ejecutar la reserva: nombre, número de personas, fecha y preferencias relevantes como alergias o requerimientos de accesibilidad. Los procesadores de pago operan con estándares de seguridad certificados. Las autoridades fiscales, judiciales o regulatorias pueden acceder a lo que la ley exija, en los términos que esa obligación establezca. Ninguna transferencia tiene propósitos comerciales.<br />El sitio wondermx.comutiliza cookies y tecnologías de rastreo para el funcionamiento técnico del sitio, el procesamiento del carrito de compras y el análisis de navegación. Al usar el sitio, usted consiente el uso de cookies necesarias. Para cookies analíticas o de marketing, Wonder Mx solicitará su consentimiento expreso cuando corresponda. Puede configurar su navegador para rechazar cookies, aunque esto puede afectar algunas funcionalidades del sitio.<br /><strong>Sus datos tienen un tiempo de vida definido. </strong>Los del formulario de contacto que no derivaron en una reserva se eliminan o disocian en un máximo de seis meses desde la última interacción. Los de facturación y pago se conservan cinco años conforme al Código Fiscal de la Federación. Vencido cada plazo, la información se bloquea y se destruye de forma irreversible.<br /><strong>La LFPDPPP le reconoce cuatro derechos que puede ejercer en cualquier momento sin necesidad de justificarse: </strong>Acceso, saber qué información tenemos sobre usted y cómo la usamos; Rectificación, corregir lo que esté incompleto o desactualizado;, Cancelación, pedir que la eliminemos de nuestros registros; y Oposición, indicar que dejemos de usarla para alguna finalidad específica. Para ejercer cualquiera de estos derechos escríbanos a <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a> con su nombre completo, la descripción del derecho que desea ejercer y una copia de identificación oficial. Responderemos en un máximo de veinte días hábiles contados a partir de la recepción de su solicitud. Si considera que su solicitud no fue atendida de forma correcta, puede acudir al INAI en <a href="http://www.inai.org.mx/" title="http://www.inai.org.mx/">www.inai.org.mx</a>.<br />Asimismo, usted puede revocar en cualquier momento el consentimiento que nos haya otorgado para el tratamiento de sus datos personales, sin efectos retroactivos, escribiéndonos a <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a>.<br /><strong>Si actualizamos este aviso, publicaremos la nueva versión en </strong> <strong>wondermx.com</strong> <strong>con</strong> <strong> la fecha de entrada en vigor. </strong>Los cambios no afectan experiencias ya reservadas y pagadas bajo los términos vigentes al momento de la compra.<br /><strong>Domicilio</strong> <strong>: START WORKS MARKETING S.A. DE C.V.</strong><br />AVENIDA TAMAULIPAS 150, PISO 18 INT 1801, COLONIA HIPODROMO, COLONIA HIPODROMO, DELEGACIÓN CUAUHTEMOC  C.P. 06100 CIUDAD DE MEXICO .<br />Última actualización: Marzo de 2026.  </p>
+
+
+            </section>
+        </div>
+    );
+}
+
+function LegalEn() {
+    return (
+        <div className="legal-container">
+            <style dangerouslySetInnerHTML={{
+                __html: `
+        .legal-container {
+          color: #1a1a1a;
+          line-height: 1.6;
+          font-family: sans-serif;
+        }
+        .legal-container h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+        .legal-container h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; color: #3048ab; }
+        .legal-container h3 { font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; }
+        .legal-container p { margin-bottom: 1.2rem; text-align: justify; }
+        .legal-container ul { margin-bottom: 1.2rem; padding-left: 1.5rem; list-style-type: disc; }
+        .legal-container li { margin-bottom: 0.5rem; }
+      `}} />
+
+            <section>
+                <h1 id="aviso-de-privacidad">Privacy Notice</h1>
+                <p>The use of the site <strong>wondermx.com</strong> and the submission of the contact form imply your consent to the processing of your personal data in accordance with this notice.<br /><strong>START WORKS MARKETING S.A. DE C.V., operating under the brand </strong> <strong>Wonder Mx</strong> <strong>, </strong>is responsible for the processing of your personal data in accordance with the Federal Law on Protection of Personal Data Held by Private Parties. We are dedicated to designing and coordinating tourism experiences in Mexico: tailor-made itineraries, restaurant and activity reservations, transportation, tours with VIP access, and real-time support during your trip. You may contact us at <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a> or through ournexttrip.com.mx. The following describes precisely what we do with the information you share with us, from the moment we receive it until the moment it is no longer with us.<br /><strong>Your information reaches </strong> <strong>Wonder Mx</strong> <strong> only when you decide to share it, </strong>and only through two channels. The first is the contact form on the site, where you may provide your name, email address, phone number or WhatsApp, the reason for your inquiry, estimated travel dates, number of people, and any additional details you consider relevant to design your experience. The second is the payment process, which operates through an encrypted gateway; in this process Wonder Mx does not store or have access to your full banking card details, as this is handled entirely within the certified processor’s environment. Wonder Mx does not collect sensitive data at any point during the contact process or service delivery.<br />Wonder Mx implements administrative, technical, and physical security measures to protect your personal data against damage, loss, alteration, destruction, or unauthorized use. Access to the information is restricted to authorized personnel who require it to fulfill the purposes described in this notice.<br /><strong>Each piece of data we receive serves a specific purpose within your trip. </strong>We use it to design your itinerary based on what you described, to manage reservations with the providers involved in your experience (restaurants, tour operators, transportation services, activities), to maintain communication with you during your trip through your assigned concierge, and to issue the corresponding tax receipts. We do not use your data to send third-party advertising nor do we share it with companies that do not have a direct role in delivering your experience. If at any point we wish to contact you again regarding a previous inquiry that did not result in a reservation, we will inform you beforehand; simply let us know if you do not want us to do so and we will stop.<br /><strong>There are times when your information reaches other parties, always with a specific operational purpose. </strong>The local providers that Wonder Mx coordinates on your behalf (restaurants, guides, operators) receive only the minimum necessary to execute the reservation: name, number of people, date, and relevant preferences such as allergies or accessibility requirements. Payment processors operate under certified security standards. Tax, judicial, or regulatory authorities may access information as required by law, under the terms established by such obligation. No transfer is made for commercial purposes.<br />The site wondermx.com uses cookies and tracking technologies for the technical functioning of the site, shopping cart processing, and navigation analysis. By using the site, you consent to the use of necessary cookies. For analytical or marketing cookies, Wonder Mx will request your express consent when applicable. You may configure your browser to reject cookies, although this may affect some site functionalities.<br /><strong>Your data has a defined lifespan. </strong>Contact form data that does not result in a reservation is deleted or dissociated within a maximum of six months from the last interaction. Billing and payment data is retained for five years in accordance with the Federal Tax Code. Once each period expires, the information is blocked and permanently destroyed.<br /><strong>The LFPDPPP grants you four rights that you may exercise at any time without needing to justify: </strong>Access, to know what information we have about you and how we use it; Rectification, to correct incomplete or outdated data; Cancellation, to request deletion from our records; and Objection, to request that we stop using your data for a specific purpose. To exercise any of these rights, please write to us at <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a> with your full name, a description of the right you wish to exercise, and a copy of an official ID. We will respond within a maximum of twenty business days from receipt of your request. If you believe your request has not been properly addressed, you may contact the INAI at <a href="http://www.inai.org.mx/" title="http://www.inai.org.mx/">www.inai.org.mx</a>.<br />You may also revoke at any time the consent you have granted for the processing of your personal data, without retroactive effects, by writing to us at <a href="mailto:contacto@ournextrip.com.mx" title="mailto:contacto@ournextrip.com.mx">contacto@wondermx.com</a>.<br /><strong>If we update this notice, we will publish the new version on </strong> <strong>wondermx.com</strong> <strong>with</strong> <strong> the effective date. </strong>Changes do not affect experiences already booked and paid under the terms in effect at the time of purchase.<br /><strong>Address</strong> <strong>: START WORKS MARKETING S.A. DE C.V.</strong><br />AVENIDA TAMAULIPAS 150, FLOOR 18 INT 1801, COLONIA HIPODROMO, COLONIA HIPODROMO, CUAUHTEMOC BOROUGH, ZIP CODE 06100, MEXICO CITY.<br />Last updated: March 2026. </p>
+            </section>
+        </div>
+    );
+}
+
+export default function LegalPage() {
+    const locale = useLocale();
+
+    return (
+        <div className="min-h-screen flex flex-col bg-white">
+            <Header />
+            <main className="flex-grow container mx-auto px-6 py-20 max-w-4xl">
+                {locale === "es" ? <LegalEs /> : <LegalEn />}
             </main>
             <Footer />
-        </>
-    )
+        </div>
+    );
 }
