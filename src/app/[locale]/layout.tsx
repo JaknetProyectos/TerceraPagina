@@ -4,6 +4,7 @@ import { CartProvider } from '@/context/CartContext';
 import ClientBody from "./ClientBody"; 
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { GoogleTagManager } from "@next/third-parties/google";
 
 export default async function LocaleLayout({
   children,
@@ -22,6 +23,7 @@ export default async function LocaleLayout({
 
   // Carga de mensajes
   const messages = await getMessages();
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
 
   return (
     <body suppressHydrationWarning className="antialiased font-work-sans">
@@ -31,6 +33,7 @@ export default async function LocaleLayout({
             {children}
           </ClientBody>
         </CartProvider>
+        {gtmId && <GoogleTagManager gtmId={gtmId} />}
       </NextIntlClientProvider>
     </body>
   );
