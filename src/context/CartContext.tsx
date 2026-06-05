@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+
+const STORAGE_KEY = "vmt-cart";
 
 export interface CartItem {
   experienceId: string;
@@ -22,41 +30,97 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-export function CartProvider({ children }: any) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+function loadCart(): CartItem[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+
+    if (!stored) return [];
+
+    const parsed = JSON.parse(stored);
+
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed;
+  } catch {
+    return [];
+  }
+}
+
+export function CartProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [cart, setCart] = useState<CartItem[]>(loadCart);
 
   useEffect(() => {
-    const stored = localStorage.getItem("cart");
-    if (stored) setCart(JSON.parse(stored));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
-    setCart(prev => {
-      if (prev.find(i => i.experienceId === item.experienceId)) return prev;
-      return [...prev, item];
+    setCart((prev) => {
+      const existing = prev.find(
+        (i) => i.experienceId === item.experienceId
+      );
+
+      if (existing) {
+        return prev.map((i) =>
+          i.experienceId === item.experienceId
+            ? {
+                ...i,
+                ...item,
+                personas:
+                  (i.personas || 1) + (item.personas || 1),
+              }
+            : i
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          ...item,
+          personas: item.personas || 1,
+        },
+      ];
     });
   };
 
-  const updateItem = (id: string, updates: Partial<CartItem>) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.experienceId === id ? { ...item, ...updates } : item
+  const updateItem = (
+    id: string,
+    updates: Partial<CartItem>
+  ) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.experienceId === id
+          ? { ...item, ...updates }
+          : item
       )
     );
   };
 
   const removeItem = (id: string) => {
-    setCart(prev => prev.filter(i => i.experienceId !== id));
+    setCart((prev) =>
+      prev.filter((i) => i.experienceId !== id)
+    );
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+  };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateItem, removeItem, clearCart }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        updateItem,
+        removeItem,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
@@ -64,6 +128,10 @@ export function CartProvider({ children }: any) {
 
 export const useCart = () => {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("CartContext missing");
+
+  if (!ctx) {
+    throw new Error("CartContext missing");
+  }
+
   return ctx;
 };

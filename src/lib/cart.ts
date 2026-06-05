@@ -1,7 +1,7 @@
 import { CartItem } from "@/interfaces/CartItem";
 import { saveReservation } from "./reservations";
 import { sendConfirmationEmail } from "./email";
-import { processEtominPayment } from "./payment";
+import { PaymentData, processEtominPayment } from "./payment";
 import { Reservation } from "@/interfaces/Reservations";
 
 export function getCart(): CartItem[] {
@@ -70,81 +70,222 @@ export async function fakePayment() {
     });
 }
 
-export async function checkout(cart: CartItem[], userData: any, cardData: any,locale: any) {
-    if (!cart.length) throw new Error("Carrito vacío");
+export async function checkout(
+    cart: CartItem[],
+    paymentData: PaymentData,
+    locale: any
+) {
+    if (!cart.length) {
+        throw new Error("Carrito vacío");
+    }
 
+    /**
+     * VALIDACIÓN DEL CARRITO
+     */
     for (const item of cart) {
         if (!item.fecha || !item.personas) {
             throw new Error("Faltan datos en el carrito");
         }
     }
 
-    const totalAmount = cart.reduce((acc, item) => {
-        const price = item.price;
-        return acc + price;
+    /**
+     * VALIDACIÓN DE PAYMENT DATA
+     */
+    if (!paymentData) {
+        throw new Error("Payment data requerido");
+    }
+
+    const {
+        amount,
+        orderId: providedOrderId,
+        cardData,
+        customer,
+        metadata,
+    } = paymentData;
+
+    if (!cardData) {
+        throw new Error("Datos de tarjeta requeridos");
+    }
+
+    if (!customer) {
+        throw new Error("Datos del cliente requeridos");
+    }
+
+    /**
+     * TOTAL DEL CARRITO
+     */
+    const cartTotal = cart.reduce((acc, item) => {
+        return acc + Number(item.price || 0);
     }, 0);
 
-    const orderId = `VMT-${Date.now().toString().slice(-6)}`;
+    /**
+     * VALIDAR TOTAL
+     */
+    if (Number(amount) !== Number(cartTotal)) {
+        throw new Error("El monto no coincide con el total del carrito");
+    }
 
-
+    /**
+     * ORDER ID
+     */
+    const orderId =
+        providedOrderId?.trim() ||
+        `VMT-${Date.now().toString().slice(-6)}`;
 
     const results: Reservation[] = [];
 
-    // Guardamos todas en la DB primero
+    /**
+     * GUARDAR RESERVACIONES
+     */
     for (const item of cart) {
-        console.log({ item })
         const reservation = await saveReservation({
             activityTitle: item.title,
             destinationName: item.destinationName,
             fecha: item.fecha,
             personas: item.personas,
-            nombre: userData.nombre,
-            email: userData.email,
-            telefono: userData.telefono,
+
+            nombre: customer.nombre,
+            apellido: customer.apellido,
+            email: customer.email,
+            telefono: customer.telefono,
+
+            direccion: customer.direccion,
+            direccion2: customer.direccion2,
+            ciudad: customer.ciudad,
+            estado: customer.estado,
+            pais: customer.pais,
+            cp: customer.cp,
+            empresa: customer.empresa,
+
             price: item.price,
+            orderId,
         });
+
         results.push(reservation);
     }
 
-    // 🎫 Generamos la información del Ticket
-    const subtotal = results.reduce((acc, curr) => acc + Number(curr.price.replace(/[^0-9.-]+/g, "")), 0);
+    /**
+     * SUBTOTAL
+     */
+    const subtotal = results.reduce((acc, curr) => {
+        const parsedPrice =
+            typeof curr.price === "string"
+                ? Number(curr.price.replace(/[^0-9.-]+/g, ""))
+                : Number(curr.price);
 
-    // 💰 Simulación de pago
+        return acc + parsedPrice;
+    }, 0);
+
+    /**
+     * PROCESAR PAGO
+     */
     const paymentResult = await processEtominPayment({
         amount: subtotal,
-        cardData: cardData, // Viene del formulario de pago
-        customer: {
-            nombre: userData.nombre,
-            email: userData.email,
-            telefono: userData.telefono,
-            direccion: userData.direccion,
-            cp: userData.cp
+        orderId,
+
+        cardData: {
+            number: cardData.number,
+            name: cardData.name,
+            month: cardData.month,
+            year: cardData.year,
+            cvv: cardData.cvv,
         },
-        orderId: orderId
+
+        customer: {
+            nombre: customer.nombre,
+            apellido: customer.apellido,
+            email: customer.email,
+            telefono: customer.telefono,
+
+            direccion: customer.direccion,
+            direccion2: customer.direccion2,
+
+            ciudad: customer.ciudad,
+            estado: customer.estado,
+            pais: customer.pais,
+
+            cp: customer.cp,
+            empresa: customer.empresa,
+        },
+
+        metadata: {
+            ip: metadata?.ip,
+            deviceId: metadata?.deviceId,
+            notes: metadata?.notes,
+        },
     });
 
+    /**
+     * VALIDAR RESPUESTA DE PAGO
+     */
+    if (!paymentResult?.success) {
+        throw new Error(
+            "No se pudo procesar el pago"
+        );
+    }
+
+    /**
+     * CHECKOUT INFO
+     */
     const checkoutInfo = {
-        orderId: orderId,
-        orderDate: new Intl.DateTimeFormat('es-MX', { dateStyle: 'long' }).format(new Date()),
-        subtotal: subtotal.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+        orderId,
+
+        orderDate: new Intl.DateTimeFormat("es-MX", {
+            dateStyle: "long",
+        }).format(new Date()),
+
+        subtotal: subtotal.toLocaleString("es-MX", {
+            style: "currency",
+            currency: "MXN",
+        }),
+
         metodoPago: "Tarjeta de crédito o débito",
+
         billingAddress: {
-            nombre: userData.nombre,
-            calle: userData.direccion || "No especificada",
-            ciudad: userData.ciudad || "Ciudad de México",
-            codigoPostal: userData.cp || "00000",
-            telefono: userData.telefono,
-            email: userData.email
-        }
+            nombre: `${customer.nombre} ${customer.apellido}`,
+
+            calle: customer.direccion || "No especificada",
+
+            direccion2: customer.direccion2 || "",
+
+            ciudad: customer.ciudad || "Ciudad de México",
+
+            estado: customer.estado || "",
+
+            pais: customer.pais || "México",
+
+            codigoPostal: customer.cp || "00000",
+
+            telefono: customer.telefono,
+
+            email: customer.email,
+
+            empresa: customer.empresa || "",
+        },
     };
 
-    console.log({ checkoutInfo })
-    console.log({ results })
+    /**
+     * EMAIL DE CONFIRMACIÓN
+     */
+    await sendConfirmationEmail(
+        results,
+        checkoutInfo,
+        locale
+    );
 
-    // 🔥 ENVIAR UN SOLO EMAIL CON TODO EL ARRAY
-    await sendConfirmationEmail(results, checkoutInfo,locale);
+    return {
+        success: true,
 
-    return results;
+        orderId,
+
+        amount: subtotal,
+
+        payment: paymentResult,
+
+        reservations: results,
+
+        checkoutInfo,
+    };
 }
 
 export function notifySuccess() {
