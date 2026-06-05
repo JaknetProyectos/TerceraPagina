@@ -1,7 +1,7 @@
 import { CartItem } from "@/interfaces/CartItem";
 import { saveReservation } from "./reservations";
 import { sendConfirmationEmail } from "./email";
-import { PaymentData, processEtominPayment } from "./payment";
+import { PaymentData, processKeycopPayment } from "./payment";
 import { Reservation } from "@/interfaces/Reservations";
 
 export function getCart(): CartItem[] {
@@ -135,8 +135,8 @@ export async function checkout(
     const results: Reservation[] = [];
 
     /**
-     * GUARDAR RESERVACIONES
-     */
+        * GUARDAR RESERVACIONES
+        */
     for (const item of cart) {
         const reservation = await saveReservation({
             activityTitle: item.title,
@@ -179,7 +179,7 @@ export async function checkout(
     /**
      * PROCESAR PAGO
      */
-    const paymentResult = await processEtominPayment({
+    const paymentResult = await processKeycopPayment({
         amount: subtotal,
         orderId,
 
@@ -214,6 +214,8 @@ export async function checkout(
             notes: metadata?.notes,
         },
     });
+
+    console.log(paymentResult)
 
     /**
      * VALIDAR RESPUESTA DE PAGO

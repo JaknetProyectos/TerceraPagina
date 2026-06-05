@@ -486,7 +486,7 @@ export default function CartPage() {
                 2. {t("payment.method")}
               </h2>
               <Image
-                src="/etomin.png"
+                src="/logo-keycop.webp"
                 alt="Etomin"
                 width={120}
                 height={40}
